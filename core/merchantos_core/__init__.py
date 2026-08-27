@@ -27,9 +27,15 @@ from merchantos_core.contracts import (
     BuyerResponse,
     NegotiationSessionState,
     LLMOutput,
+    InventoryRecord,
+    InventoryState,
+    CumulativeLedger,
+    PolicyCheck,
+    CommerceDecision,
 )
 from merchantos_core.agents.growth_agent import MerchantGrowthAgent
 from merchantos_core.agents.rules_baseline import RulesBaselineAgent
+from merchantos_core.commerceproof.engine import CommerceProof
 from merchantos_core.llm.provider import AbstractLLMProvider, MockLLMProvider
 from merchantos_core.llm.prompts import build_merchant_prompt
 from merchantos_core.negotiation.buyer_simulator import BuyerSimulator
@@ -63,6 +69,12 @@ __all__ = [
     "BuyerResponse",
     "NegotiationSessionState",
     "LLMOutput",
+    "InventoryRecord",
+    "InventoryState",
+    "CumulativeLedger",
+    "PolicyCheck",
+    "CommerceDecision",
+    "CommerceProof",
     "MerchantGrowthAgent",
     "RulesBaselineAgent",
     "AbstractLLMProvider",
