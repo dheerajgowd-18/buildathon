@@ -23,8 +23,17 @@ from merchantos_core.contracts import (
     AgentInput,
     ExtractedSignals,
     ProposedOffer,
+    NegotiationEvent,
+    BuyerResponse,
+    NegotiationSessionState,
+    LLMOutput,
 )
+from merchantos_core.agents.growth_agent import MerchantGrowthAgent
 from merchantos_core.agents.rules_baseline import RulesBaselineAgent
+from merchantos_core.llm.provider import AbstractLLMProvider, MockLLMProvider
+from merchantos_core.llm.prompts import build_merchant_prompt
+from merchantos_core.negotiation.buyer_simulator import BuyerSimulator
+from merchantos_core.negotiation.engine import NegotiationEngine
 from merchantos_core.hashing import canonical_checkout_hash, sha256_hex
 
 __all__ = [
@@ -50,8 +59,17 @@ __all__ = [
     "AgentInput",
     "ExtractedSignals",
     "ProposedOffer",
+    "NegotiationEvent",
+    "BuyerResponse",
+    "NegotiationSessionState",
+    "LLMOutput",
+    "MerchantGrowthAgent",
     "RulesBaselineAgent",
+    "AbstractLLMProvider",
+    "MockLLMProvider",
+    "build_merchant_prompt",
+    "BuyerSimulator",
+    "NegotiationEngine",
     "sha256_hex",
     "canonical_checkout_hash",
 ]
-
