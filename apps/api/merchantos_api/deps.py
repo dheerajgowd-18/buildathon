@@ -6,6 +6,7 @@ from typing import Annotated
 from fastapi import Depends, Request
 
 from merchantos_core.config import Settings
+from merchantos_core.ledger.trade_ledger import TradeLedger
 from merchantos_razorpay.adapter import RazorpayAdapterBase, build_razorpay_adapter
 
 
@@ -22,8 +23,22 @@ def get_settings(request: Request) -> Settings:
     return get_global_settings()
 
 
+@lru_cache
+def get_global_trade_ledger() -> TradeLedger:
+    """Load default global TradeLedger singleton."""
+    return TradeLedger()
+
+
+def get_trade_ledger(request: Request) -> TradeLedger:
+    """Retrieve trade ledger from app state if configured, otherwise from global singleton."""
+    if hasattr(request.app.state, "trade_ledger") and request.app.state.trade_ledger is not None:
+        return request.app.state.trade_ledger
+    return get_global_trade_ledger()
+
+
 def get_razorpay_adapter(
     settings: Annotated[Settings, Depends(get_settings)],
 ) -> RazorpayAdapterBase:
     """Instantiate Razorpay adapter configured for current settings."""
     return build_razorpay_adapter(settings=settings)
+

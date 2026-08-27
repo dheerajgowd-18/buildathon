@@ -414,5 +414,46 @@ class EvaluationReport(BaseModel):
     divergence_buckets: list[DivergenceBucket]
 
 
+TradeEventType = Literal[
+    "intent_received",
+    "offer_proposed",
+    "gate_decision",
+    "order_created",
+    "payment_captured",
+    "payment_failed",
+    "error",
+]
+
+
+class TradeEvent(BaseModel):
+    """Immutable audit trail event in the trade ledger."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    event_id: str = Field(min_length=1)
+    session_id: str = Field(min_length=1)
+    timestamp: str = Field(min_length=1)
+    event_type: Literal[
+        "intent_received",
+        "offer_proposed",
+        "gate_decision",
+        "order_created",
+        "payment_captured",
+        "payment_failed",
+        "error",
+    ]
+    payload: str = Field(description="JSON-serialized string of event payload")
+
+
+class LedgerEntry(BaseModel):
+    """Aggregated session trace containing chronological trade events."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    session_id: str = Field(min_length=1)
+    events: list[TradeEvent] = Field(default_factory=list)
+
+
+
 
 

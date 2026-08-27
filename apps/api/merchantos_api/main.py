@@ -5,9 +5,13 @@ from fastapi import FastAPI
 from merchantos_api.routers.health import router as health_router
 from merchantos_api.routers.webhooks import router as webhooks_router
 from merchantos_core.config import Settings
+from merchantos_core.ledger.trade_ledger import TradeLedger
 
 
-def create_app(settings: Settings | None = None) -> FastAPI:
+def create_app(
+    settings: Settings | None = None,
+    trade_ledger: TradeLedger | None = None,
+) -> FastAPI:
     """Create and configure MerchantOS FastAPI application instance."""
     app_instance = FastAPI(
         title="MerchantOS AI API",
@@ -16,6 +20,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     )
 
     app_instance.state.settings = settings
+    app_instance.state.trade_ledger = trade_ledger
 
     app_instance.include_router(health_router)
     app_instance.include_router(webhooks_router)
@@ -24,3 +29,4 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
 
 app = create_app()
+
