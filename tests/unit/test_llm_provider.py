@@ -106,3 +106,61 @@ def test_mock_llm_override_hook() -> None:
     provider = MockLLMProvider(override_output=canned)
     result = provider.generate_offer_proposal("sys", "user")
     assert result == canned
+
+
+def test_mock_llm_adapts_to_counter(
+    sample_catalog: list[Product],
+    sample_policy: MerchantPolicy,
+) -> None:
+    """Pass a MockLLMProvider a prompt containing negotiation history where the buyer said 'price too high'.
+
+    Assert the generated LLMOutput has a higher discount than round 1.
+    """
+    from merchantos_core.contracts import NegotiationEvent
+
+    # Round 1 Input
+    r1_input = AgentInput(
+        session_id="sess_adapt_01",
+        nl_utterance="Looking for a laptop under 35k.",
+        available_catalog=sample_catalog,
+        merchant_policy=sample_policy,
+        negotiation_history=[],
+    )
+    sys_prompt_1, user_prompt_1 = build_merchant_prompt(r1_input)
+
+    provider = MockLLMProvider()
+    out_r1 = provider.generate_offer_proposal(sys_prompt_1, user_prompt_1)
+
+    # Round 2 Input with buyer counter
+    r2_history = [
+        NegotiationEvent(
+            session_id="sess_adapt_01",
+            round=1,
+            actor="merchant_agent",
+            message_type="initial_offer",
+            offer_id="off_r1",
+            reason_text=out_r1.rationale,
+        ),
+        NegotiationEvent(
+            session_id="sess_adapt_01",
+            round=1,
+            actor="buyer_agent",
+            message_type="counter_offer",
+            reason_text="That's over my budget, I can do around 32k max",
+        ),
+    ]
+    r2_input = AgentInput(
+        session_id="sess_adapt_01",
+        nl_utterance="That's over my budget, I can do around 32k max",
+        available_catalog=sample_catalog,
+        merchant_policy=sample_policy,
+        negotiation_history=r2_history,
+    )
+    sys_prompt_2, user_prompt_2 = build_merchant_prompt(r2_input)
+
+    out_r2 = provider.generate_offer_proposal(sys_prompt_2, user_prompt_2)
+
+    # Assert adaptive behavior: Round 2 discount is strictly greater than Round 1 anchor discount
+    assert out_r2.discount_minor > out_r1.discount_minor
+    assert out_r2.proposed_price_minor < out_r1.proposed_price_minor
+

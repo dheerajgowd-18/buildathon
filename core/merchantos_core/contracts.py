@@ -359,4 +359,60 @@ class CommerceDecision(BaseModel):
     final_state_hash: str | None = None
 
 
+class ArmResult(BaseModel):
+    """Execution result for a single scenario under a specific agent arm and gate."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    arm_name: Literal["rules_baseline", "growth_agent"]
+    scenario_id: str = Field(min_length=1)
+    status: Literal["converted", "rejected", "max_rounds_reached", "blocked_by_gate"]
+    final_price_minor: int | None = Field(default=None, ge=0)
+    final_discount_minor: int | None = Field(default=None, ge=0)
+    negotiation_rounds: int = Field(ge=0)
+    gate_rejections: int = Field(ge=0)
+    gate_repairs: int = Field(ge=0)
+    contribution_margin_minor: int | None = None
+
+
+class EvaluationMetrics(BaseModel):
+    """Aggregated statistical metrics for an evaluation arm."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    total_scenarios: int = Field(ge=0)
+    conversion_rate: float = Field(ge=0.0, le=1.0)
+    avg_contribution_margin_minor: float
+    avg_negotiation_rounds: float = Field(ge=0.0)
+    gate_rejection_rate: float = Field(ge=0.0, le=1.0)
+    repair_rate: float = Field(ge=0.0, le=1.0)
+
+
+class DivergenceBucket(BaseModel):
+    """Paired evaluation metrics grouped by stated-vs-true buyer intent divergence."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    bucket_name: Literal["low", "medium", "high"]
+    divergence_range: str = Field(min_length=1)
+    rules_metrics: EvaluationMetrics
+    growth_metrics: EvaluationMetrics
+    conversion_delta: float
+    margin_delta_minor: float
+
+
+class EvaluationReport(BaseModel):
+    """Comprehensive paired evaluation report comparing rules baseline and growth agent."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    report_id: str = Field(min_length=1)
+    timestamp: str = Field(min_length=1)
+    dataset: Literal["dev", "heldout"]
+    overall_rules_metrics: EvaluationMetrics
+    overall_growth_metrics: EvaluationMetrics
+    divergence_buckets: list[DivergenceBucket]
+
+
+
 

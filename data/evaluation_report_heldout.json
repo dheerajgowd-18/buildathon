@@ -1,0 +1,89 @@
+{
+  "report_id": "eval_0380cbd2b8a3",
+  "timestamp": "2026-08-27T16:57:16.751906+00:00",
+  "dataset": "heldout",
+  "overall_rules_metrics": {
+    "total_scenarios": 50,
+    "conversion_rate": 0.68,
+    "avg_contribution_margin_minor": 387690.82352941175,
+    "avg_negotiation_rounds": 1.56,
+    "gate_rejection_rate": 0.06,
+    "repair_rate": 0.06
+  },
+  "overall_growth_metrics": {
+    "total_scenarios": 50,
+    "conversion_rate": 0.94,
+    "avg_contribution_margin_minor": 321091.7659574468,
+    "avg_negotiation_rounds": 1.38,
+    "gate_rejection_rate": 0.06,
+    "repair_rate": 0.04
+  },
+  "divergence_buckets": [
+    {
+      "bucket_name": "low",
+      "divergence_range": "<0.3",
+      "rules_metrics": {
+        "total_scenarios": 14,
+        "conversion_rate": 0.8571428571428571,
+        "avg_contribution_margin_minor": 428083.8333333333,
+        "avg_negotiation_rounds": 1.1428571428571428,
+        "gate_rejection_rate": 0.07142857142857142,
+        "repair_rate": 0.21428571428571427
+      },
+      "growth_metrics": {
+        "total_scenarios": 14,
+        "conversion_rate": 0.9285714285714286,
+        "avg_contribution_margin_minor": 365173.23076923075,
+        "avg_negotiation_rounds": 1.3571428571428572,
+        "gate_rejection_rate": 0.07142857142857142,
+        "repair_rate": 0.14285714285714285
+      },
+      "conversion_delta": 0.07142857142857151,
+      "margin_delta_minor": -62910.60256410256
+    },
+    {
+      "bucket_name": "medium",
+      "divergence_range": "0.3-0.6",
+      "rules_metrics": {
+        "total_scenarios": 17,
+        "conversion_rate": 0.5294117647058824,
+        "avg_contribution_margin_minor": 440153.1111111111,
+        "avg_negotiation_rounds": 1.8235294117647058,
+        "gate_rejection_rate": 0.058823529411764705,
+        "repair_rate": 0.0
+      },
+      "growth_metrics": {
+        "total_scenarios": 17,
+        "conversion_rate": 0.9411764705882353,
+        "avg_contribution_margin_minor": 301028.6875,
+        "avg_negotiation_rounds": 1.4705882352941178,
+        "gate_rejection_rate": 0.058823529411764705,
+        "repair_rate": 0.0
+      },
+      "conversion_delta": 0.4117647058823529,
+      "margin_delta_minor": -139124.42361111112
+    },
+    {
+      "bucket_name": "high",
+      "divergence_range": ">=0.6",
+      "rules_metrics": {
+        "total_scenarios": 19,
+        "conversion_rate": 0.6842105263157895,
+        "avg_contribution_margin_minor": 314084.92307692306,
+        "avg_negotiation_rounds": 1.631578947368421,
+        "gate_rejection_rate": 0.05263157894736842,
+        "repair_rate": 0.0
+      },
+      "growth_metrics": {
+        "total_scenarios": 19,
+        "conversion_rate": 0.9473684210526315,
+        "avg_contribution_margin_minor": 307089.0,
+        "avg_negotiation_rounds": 1.3157894736842106,
+        "gate_rejection_rate": 0.05263157894736842,
+        "repair_rate": 0.0
+      },
+      "conversion_delta": 0.26315789473684204,
+      "margin_delta_minor": -6995.9230769230635
+    }
+  ]
+}

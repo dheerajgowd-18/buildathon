@@ -1,4 +1,4 @@
-﻿"""Unit tests for RulesBaselineAgent deterministic signal extraction and commercial offer logic."""
+"""Unit tests for RulesBaselineAgent deterministic signal extraction and commercial offer logic."""
 
 from __future__ import annotations
 
@@ -239,3 +239,78 @@ def test_rules_agent_all_dev_scenarios(agent: RulesBaselineAgent) -> None:
 
         min_margin_price = int(selected_product.cost_minor * (1.0 + sc.merchant_policy.margin_floor_pct))
         assert offer.proposed_price_minor >= min_margin_price
+
+
+def test_rules_agent_does_not_adapt(
+    agent: RulesBaselineAgent,
+    sample_catalog: list[Product],
+    sample_policy: MerchantPolicy,
+) -> None:
+    """Pass a RulesBaselineAgent an AgentInput with negotiation_history containing 2 rounds of counter-offers.
+
+    Assert it produces the same offer as round 1, demonstrating strict non-adaptiveness.
+    """
+    from merchantos_core.contracts import NegotiationEvent
+
+    initial_input = AgentInput(
+        session_id="sess_non_adapt",
+        nl_utterance="Looking for laptop strictly under 40k.",
+        available_catalog=sample_catalog,
+        merchant_policy=sample_policy,
+        negotiation_history=[],
+    )
+
+    round_1_offer = agent.score_and_propose(initial_input)
+
+    # Now construct round 3 input with 2 rounds of buyer counter history
+    history = [
+        NegotiationEvent(
+            session_id="sess_non_adapt",
+            round=1,
+            actor="merchant_agent",
+            message_type="initial_offer",
+            offer_id=round_1_offer.offer_id,
+            proposed_offer=round_1_offer,
+            reason_text=round_1_offer.rationale,
+        ),
+        NegotiationEvent(
+            session_id="sess_non_adapt",
+            round=1,
+            actor="buyer_agent",
+            message_type="counter_offer",
+            reason_text="That's over my budget, I can do around 30k max",
+        ),
+        NegotiationEvent(
+            session_id="sess_non_adapt",
+            round=2,
+            actor="merchant_agent",
+            message_type="counter_offer",
+            offer_id=round_1_offer.offer_id,
+            proposed_offer=round_1_offer,
+            reason_text=round_1_offer.rationale,
+        ),
+        NegotiationEvent(
+            session_id="sess_non_adapt",
+            round=2,
+            actor="buyer_agent",
+            message_type="counter_offer",
+            reason_text="I really need faster delivery, can you do express?",
+        ),
+    ]
+
+    round_3_input = AgentInput(
+        session_id="sess_non_adapt",
+        nl_utterance="I really need faster delivery, can you do express?",
+        available_catalog=sample_catalog,
+        merchant_policy=sample_policy,
+        negotiation_history=history,
+    )
+
+    round_3_offer = agent.score_and_propose(round_3_input)
+
+    # Assert offer is IDENTICAL to round 1
+    assert round_3_offer.proposed_price_minor == round_1_offer.proposed_price_minor
+    assert round_3_offer.discount_minor == round_1_offer.discount_minor
+    assert round_3_offer.shipping_tier == round_1_offer.shipping_tier
+    assert round_3_offer.selected_sku_id == round_1_offer.selected_sku_id
+

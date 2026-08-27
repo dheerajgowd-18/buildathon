@@ -228,3 +228,79 @@ def test_unknown_webhook_event_model() -> None:
     )
     assert event.event == "refund.processed"
     assert event.raw_body_sha256 == "abc123def456"
+
+
+def test_evaluation_contracts_invariants() -> None:
+    """Ensure strict validation and extra=forbid on Phase 06 evaluation contracts."""
+    from merchantos_core.contracts import (
+        ArmResult,
+        DivergenceBucket,
+        EvaluationMetrics,
+        EvaluationReport,
+    )
+
+    arm_res = ArmResult(
+        arm_name="rules_baseline",
+        scenario_id="scen_01",
+        status="converted",
+        final_price_minor=10000,
+        final_discount_minor=2000,
+        negotiation_rounds=1,
+        gate_rejections=0,
+        gate_repairs=0,
+        contribution_margin_minor=3000,
+    )
+    assert arm_res.status == "converted"
+
+    with pytest.raises(Exception):
+        ArmResult(
+            arm_name="rules_baseline",
+            scenario_id="scen_01",
+            status="invalid_status",  # type: ignore[arg-type]
+            negotiation_rounds=1,
+            gate_rejections=0,
+            gate_repairs=0,
+        )
+
+    with pytest.raises(Exception):
+        # extra field forbidden
+        ArmResult(
+            arm_name="rules_baseline",
+            scenario_id="scen_01",
+            status="converted",
+            negotiation_rounds=1,
+            gate_rejections=0,
+            gate_repairs=0,
+            extra_field="illegal",  # type: ignore[call-arg]
+        )
+
+    metrics = EvaluationMetrics(
+        total_scenarios=10,
+        conversion_rate=0.8,
+        avg_contribution_margin_minor=25000.0,
+        avg_negotiation_rounds=1.5,
+        gate_rejection_rate=0.1,
+        repair_rate=0.2,
+    )
+    assert metrics.conversion_rate == 0.8
+
+    bucket = DivergenceBucket(
+        bucket_name="low",
+        divergence_range="<0.3",
+        rules_metrics=metrics,
+        growth_metrics=metrics,
+        conversion_delta=0.0,
+        margin_delta_minor=0.0,
+    )
+    assert bucket.bucket_name == "low"
+
+    report = EvaluationReport(
+        report_id="rep_01",
+        timestamp="2026-08-27T00:00:00Z",
+        dataset="dev",
+        overall_rules_metrics=metrics,
+        overall_growth_metrics=metrics,
+        divergence_buckets=[bucket],
+    )
+    assert report.dataset == "dev"
+

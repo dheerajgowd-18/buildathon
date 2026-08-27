@@ -153,3 +153,46 @@ def test_buyer_rejects_missing_product(
     simulator = BuyerSimulator()
     response = simulator.evaluate_offer(offer, base_intent, [])
     assert response.action == "reject"
+
+
+def test_buyer_rejects_high_divergence_first_round(sample_catalog: list[Product]) -> None:
+    """In a high-divergence scenario where the utterance says 'budget is flexible' but true price_sensitivity is 0.95,
+
+    assert that the buyer REJECTS or COUNTERS the first offer (because the agent applies insufficient discount).
+    """
+    # True intent: price_sensitivity = 0.95, budget = ₹30,000 (3,000,000 paise)
+    intent = BuyerIntent(
+        session_id="sess_high_div_01",
+        category="laptops",
+        budget_max_minor=3000000,
+        delivery_days_max=3,
+        priority=["performance"],
+        hard_exclusions=[],
+        price_sensitivity=0.95,
+        delivery_sensitivity=0.05,
+        acceptance_threshold=0.85,
+        stated_vs_true_divergence=0.85,
+    )
+
+    # First offer proposes base price ₹40,000 (no discount)
+    offer = ProposedOffer(
+        offer_id="off_first_01",
+        session_id="sess_high_div_01",
+        selected_sku_id="SKU-LAP-001",
+        proposed_price_minor=4000000,
+        discount_minor=0,
+        shipping_tier="standard",
+        rationale="Base price offer from anchor / flexible budget utterance",
+    )
+
+    simulator = BuyerSimulator()
+    response = simulator.evaluate_offer(offer, intent, sample_catalog)
+
+    # Offer exceeds budget by ₹10,000 on ₹30,000 (excess 33.3% -> price score drops to 0.33)
+    # Utility drops well below threshold -> must NOT accept (action is 'counter' or 'reject')
+    assert response.action in ("counter", "reject")
+    assert response.action != "accept"
+    if response.action == "counter":
+        assert response.counter_utterance is not None
+        assert "budget" in response.counter_utterance.lower()
+

@@ -1,4 +1,4 @@
-﻿"""Deterministic rules-based baseline decision agent for MerchantOS AI."""
+"""Deterministic rules-based baseline decision agent for MerchantOS AI."""
 
 from __future__ import annotations
 
@@ -224,8 +224,15 @@ class RulesBaselineAgent:
         if not agent_input.available_catalog:
             raise ValueError("available_catalog must not be empty")
 
-        # 1. Signal extraction
+        # Non-adaptive behavior: if prior merchant offers exist in history, repeat the round 1 offer
+        if agent_input.negotiation_history:
+            for event in agent_input.negotiation_history:
+                if event.actor == "merchant_agent" and event.proposed_offer is not None:
+                    return event.proposed_offer
+
+        # 1. Signal extraction (from initial utterance)
         signals = self.extract_signals(agent_input.nl_utterance)
+
 
         # 2. Product selection
         # Filter available catalog by estimated category
