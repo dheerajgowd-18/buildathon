@@ -1,0 +1,1 @@
+"""MerchantOS AI scripts package."""
