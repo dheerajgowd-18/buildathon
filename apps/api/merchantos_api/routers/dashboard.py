@@ -234,9 +234,9 @@ async def dashboard_index(
     sessions_data.reverse()
 
     return templates.TemplateResponse(
-        "index.html",
-        {
-            "request": request,
+        request=request,
+        name="index.html",
+        context={
             "sessions": sessions_data,
             "total_sessions": len(sessions_data),
             "total_converted": total_converted,
@@ -258,9 +258,9 @@ async def dashboard_trace(
     enriched_events = [_enrich_event_for_display(event) for event in raw_events]
 
     return templates.TemplateResponse(
-        "trace.html",
-        {
-            "request": request,
+        request=request,
+        name="trace.html",
+        context={
             "session_id": session_id,
             "summary": summary,
             "events": enriched_events,
