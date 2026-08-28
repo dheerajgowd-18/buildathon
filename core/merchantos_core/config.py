@@ -23,6 +23,12 @@ class Settings(BaseSettings):
     razorpay_base_url: str = "https://api.razorpay.com"
     razorpay_request_timeout_seconds: float = 10.0
 
+    # LLM Settings (OpenAI-compatible)
+    llm_use_mock: bool = True
+    llm_api_key: SecretStr | None = None
+    llm_base_url: str = "https://api.groq.com/openai/v1"
+    llm_model_name: str = "openai/gpt-oss-120b"
+
     @model_validator(mode="after")
     def validate_live_credentials(self) -> "Settings":
         """Fail fast if live mode is enabled but required secrets are missing."""
@@ -38,6 +44,16 @@ class Settings(BaseSettings):
             if missing_fields:
                 raise ValueError(
                     f"Live Razorpay mode requires the following credentials: {', '.join(missing_fields)}"
+                )
+
+        if not self.llm_use_mock:
+            missing_llm_fields: list[str] = []
+            if not self.llm_api_key or not self.llm_api_key.get_secret_value().strip():
+                missing_llm_fields.append("LLM_API_KEY")
+
+            if missing_llm_fields:
+                raise ValueError(
+                    f"Live LLM mode requires the following credentials: {', '.join(missing_llm_fields)}"
                 )
         return self
 

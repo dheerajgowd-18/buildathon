@@ -2,6 +2,7 @@
 
 from fastapi import FastAPI
 
+from merchantos_api.routers.dashboard import router as dashboard_router
 from merchantos_api.routers.health import router as health_router
 from merchantos_api.routers.webhooks import router as webhooks_router
 from merchantos_core.config import Settings
@@ -22,6 +23,7 @@ def create_app(
     app_instance.state.settings = settings
     app_instance.state.trade_ledger = trade_ledger
 
+    app_instance.include_router(dashboard_router)
     app_instance.include_router(health_router)
     app_instance.include_router(webhooks_router)
 

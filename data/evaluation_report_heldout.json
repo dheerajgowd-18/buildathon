@@ -1,6 +1,6 @@
 {
-  "report_id": "eval_2428dd296f0d",
-  "timestamp": "2026-08-27T17:14:41.194403+00:00",
+  "report_id": "eval_c25c4c7679c9",
+  "timestamp": "2026-08-28T15:57:19.841658+00:00",
   "dataset": "heldout",
   "overall_rules_metrics": {
     "total_scenarios": 50,

@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MerchantOS AI — Judge Dashboard</title>
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #1e293b;
+            --bg-card-hover: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #334155;
+            --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.15);
+            --success: #10b981;
+            --success-bg: rgba(16, 185, 129, 0.15);
+            --warning: #f59e0b;
+            --warning-bg: rgba(245, 158, 11, 0.15);
+            --danger: #ef4444;
+            --danger-bg: rgba(239, 68, 68, 0.15);
+            --info: #6366f1;
+            --info-bg: rgba(99, 102, 241, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .brand-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .brand-title span.badge-pill {
+            font-size: 0.75rem;
+            background: var(--accent-glow);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 0.2rem 0.6rem;
+            border-radius: 9999px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-top: 0.25rem;
+        }
+
+        .axiom-box {
+            background: rgba(30, 41, 59, 0.7);
+            border-left: 3px solid var(--accent);
+            padding: 0.75rem 1rem;
+            border-radius: 0 6px 6px 0;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            max-width: 420px;
+        }
+
+        .axiom-box strong {
+            color: var(--accent);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .stat-desc {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background: rgba(15, 23, 42, 0.6);
+            color: var(--text-secondary);
+            padding: 0.85rem 1.25rem;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-primary);
+            vertical-align: middle;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background-color: var(--bg-card-hover);
+        }
+
+        .session-link {
+            font-family: monospace;
+            font-weight: 600;
+            color: var(--accent);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .session-link:hover {
+            text-decoration: underline;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+
+        .badge-success {
+            background: var(--success-bg);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .badge-warning {
+            background: var(--warning-bg);
+            color: var(--warning);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .badge-danger {
+            background: var(--danger-bg);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .badge-info {
+            background: var(--info-bg);
+            color: var(--info);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .badge-secondary {
+            background: rgba(148, 163, 184, 0.1);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-view {
+            display: inline-block;
+            background: var(--accent-glow);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 0.35rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+
+        .btn-view:hover {
+            background: var(--accent);
+            color: var(--bg-primary);
+        }
+
+        .empty-state {
+            padding: 4rem 2rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .empty-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        footer {
+            margin-top: 2.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <div class="brand-title">
+                    MerchantOS AI
+                    <span class="badge-pill">Static Judge Dashboard</span>
+                </div>
+                <div class="subtitle">Deterministic Negotiation Control Gate & Trade Ledger Trace Visualizer</div>
+            </div>
+            <div class="axiom-box">
+                <strong>Invariant:</strong> LLM Proposes, Code Disposes.<br>
+                Zero unverified money movement. 100% auditability.
+            </div>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-label">Total Sessions Tracked</span>
+                <span class="stat-value">{{ total_sessions }}</span>
+                <span class="stat-desc">In-memory TradeLedger sessions</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Converted Settlements</span>
+                <span class="stat-value" style="color: var(--success);">{{ total_converted }}</span>
+                <span class="stat-desc">HMAC & amount verified capture</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Blocked by Gate</span>
+                <span class="stat-value" style="color: var(--danger);">{{ total_blocked }}</span>
+                <span class="stat-desc">CommerceProof policy / OOS blocks</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Security & Declines</span>
+                <span class="stat-value" style="color: var(--warning);">{{ total_failed_or_error }}</span>
+                <span class="stat-desc">Cart mutations & gateway declines</span>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Trade Ledger Session Registry</h2>
+                <span style="font-size: 0.8rem; color: var(--text-muted);">60-Second Judge Trace Inspector</span>
+            </div>
+
+            {% if sessions %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Session ID</th>
+                        <th>Rounds</th>
+                        <th>Events</th>
+                        <th>Gate Action</th>
+                        <th>Approved / Captured Amount</th>
+                        <th>Final Lifecycle Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in sessions %}
+                    <tr>
+                        <td>
+                            <a href="/dashboard/trace/{{ s.session_id }}" class="session-link">
+                                {{ s.session_id }}
+                            </a>
+                        </td>
+                        <td>{{ s.rounds }}</td>
+                        <td>{{ s.event_count }}</td>
+                        <td>
+                            {% if s.gate_action == 'EXECUTE' %}
+                                <span class="badge badge-success">EXECUTE</span>
+                            {% elif s.gate_action == 'REPAIR' %}
+                                <span class="badge badge-warning">REPAIR</span>
+                            {% elif s.gate_action == 'BLOCK' %}
+                                <span class="badge badge-danger">BLOCK</span>
+                            {% else %}
+                                <span class="badge badge-secondary">{{ s.gate_action }}</span>
+                            {% endif %}
+                        </td>
+                        <td style="font-family: monospace; font-weight: 600;">
+                            {{ s.final_amount_minor | format_inr }}
+                        </td>
+                        <td>
+                            <span class="badge {{ s.status_badge }}">
+                                {{ s.status_label }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="/dashboard/trace/{{ s.session_id }}" class="btn-view">Inspect Trace &rarr;</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">&empty;</div>
+                <h3>No Sessions Recorded in Trade Ledger</h3>
+                <p style="margin-top: 0.5rem; font-size: 0.85rem;">Run automated evaluation tests, adversarial suites, or send live webhook / checkout requests to populate the ledger.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <footer>
+            MerchantOS AI &bull; Master Plan &sect;14 Judge Dashboard &bull; Server-Rendered (FastAPI + Jinja2) &bull; Zero External Frontend Pipeline
+        </footer>
+    </div>
+</body>
+</html>

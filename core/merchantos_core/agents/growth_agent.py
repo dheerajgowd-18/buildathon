@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Literal
 
+from merchantos_core.config import Settings
 from merchantos_core.contracts import (
     AgentInput,
     Product,
@@ -11,6 +12,21 @@ from merchantos_core.contracts import (
 )
 from merchantos_core.llm.prompts import build_merchant_prompt
 from merchantos_core.llm.provider import AbstractLLMProvider, MockLLMProvider
+
+
+def build_llm_provider(settings: Settings) -> AbstractLLMProvider:
+    """Factory to construct either Mock or real OpenAI-compatible LLM provider based on settings."""
+    if settings.llm_use_mock:
+        return MockLLMProvider()
+    if not settings.llm_api_key or not settings.llm_api_key.get_secret_value().strip():
+        raise ValueError("LLM_API_KEY is required when LLM_USE_MOCK is False")
+    from merchantos_core.llm.openai_provider import OpenAICompatibleLLMProvider
+
+    return OpenAICompatibleLLMProvider(
+        api_key=settings.llm_api_key,
+        base_url=settings.llm_base_url,
+        model=settings.llm_model_name,
+    )
 
 
 class MerchantGrowthAgent:
@@ -21,13 +37,23 @@ class MerchantGrowthAgent:
     guarantee merchant policy compliance (discount caps, margin floors, catalog existence).
     """
 
-    def __init__(self, llm_provider: AbstractLLMProvider | None = None) -> None:
-        """Initialize the growth agent with an LLM provider.
+    def __init__(
+        self,
+        llm_provider: AbstractLLMProvider | None = None,
+        settings: Settings | None = None,
+    ) -> None:
+        """Initialize the growth agent with an LLM provider or settings.
 
         Args:
-            llm_provider: Implementation of AbstractLLMProvider (defaults to MockLLMProvider).
+            llm_provider: Implementation of AbstractLLMProvider (optional).
+            settings: Settings instance to build provider if llm_provider is not provided.
         """
-        self.llm_provider: AbstractLLMProvider = llm_provider or MockLLMProvider()
+        if llm_provider is not None:
+            self.llm_provider = llm_provider
+        elif settings is not None:
+            self.llm_provider = build_llm_provider(settings)
+        else:
+            self.llm_provider = MockLLMProvider()
 
     def score_and_propose(self, agent_input: AgentInput) -> ProposedOffer:
         """Evaluate agent input via LLM and propose a policy-clamped commercial offer.
