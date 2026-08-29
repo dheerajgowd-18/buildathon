@@ -75,7 +75,7 @@ FREEZE_DATE: 2026-08-27
 DATASET_SPLITS: dev (100 scenarios, seed 42-141), heldout (50 scenarios, seed 142-191)
 ```
 
-Frozen at commit: <HASH-PENDING>
+Frozen at commit: 0fcfad315a3a465681401df42a5e27769ea10181
 
 ---
 
