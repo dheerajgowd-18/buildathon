@@ -23,16 +23,27 @@ def get_settings(request: Request) -> Settings:
     return get_global_settings()
 
 
+from pathlib import Path
+
+DATA_DIR = Path(__file__).resolve().parent.parent.parent / "data"
+
+
 @lru_cache
 def get_global_trade_ledger() -> TradeLedger:
     """Load default global TradeLedger singleton."""
-    return TradeLedger()
+    settings = get_global_settings()
+    persist_path = (DATA_DIR / "ledger_history.jsonl") if settings.ledger_persist_enabled else None
+    return TradeLedger(persist_path=persist_path)
 
 
 def get_trade_ledger(request: Request) -> TradeLedger:
     """Retrieve trade ledger from app state if configured, otherwise from global singleton."""
     if hasattr(request.app.state, "trade_ledger") and request.app.state.trade_ledger is not None:
         return request.app.state.trade_ledger
+    settings = get_settings(request)
+    if settings.ledger_persist_enabled:
+        persist_path = DATA_DIR / "ledger_history.jsonl"
+        return TradeLedger(persist_path=persist_path)
     return get_global_trade_ledger()
 
 

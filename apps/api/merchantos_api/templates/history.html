@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Trade History & Archive — MerchantOS AI{% endblock %}
+
+{% block content %}
+<section class="section fade-up-element" style="padding-top: 48px;">
+    <div class="container">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 28px; flex-wrap: wrap; gap: 16px;">
+            <div>
+                <span class="eyebrow">PERSISTENT AUDIT ARCHIVE</span>
+                <h1 style="font-size: 28px; font-weight: 650; letter-spacing: -0.02em;">Trade Ledger Session Registry &amp; Archive</h1>
+                <p style="color: var(--muted); font-size: 14px; margin-top: 4px;">
+                    Immutable ledger records of live negotiations, fairness races, security attacks, and settlement webhooks.
+                </p>
+            </div>
+            <div>
+                <span class="badge-pill-mode" style="font-size: 11px; padding: 5px 12px;">{{ total_sessions }} SESSIONS ARCHIVED</span>
+            </div>
+        </div>
+
+        <!-- Metric Band -->
+        <div class="kpi-band" style="margin-bottom: 32px; border-bottom: 1px solid var(--hairline); border-top: 1px solid var(--hairline);">
+            <div class="kpi-cell">
+                <span class="eyebrow">TOTAL SESSIONS</span>
+                <div class="kpi-number" id="kpi-total-sessions">{{ total_sessions }}</div>
+                <div class="kpi-desc">Recorded trade sessions</div>
+            </div>
+            <div class="kpi-cell">
+                <span class="eyebrow">CONVERTED SETTLEMENTS</span>
+                <div class="kpi-number" id="kpi-converted" style="color: var(--success);">{{ total_converted }}</div>
+                <div class="kpi-desc">HMAC-verified captured payments</div>
+            </div>
+            <div class="kpi-cell">
+                <span class="eyebrow">GATE BLOCKS</span>
+                <div class="kpi-number" id="kpi-blocked" style="color: var(--danger);">{{ total_blocked }}</div>
+                <div class="kpi-desc">CommerceProof invariant blocks</div>
+            </div>
+            <div class="kpi-cell">
+                <span class="eyebrow">SECURITY INTERCEPTS</span>
+                <div class="kpi-number" id="kpi-declined" style="color: var(--warning);">{{ total_failed_or_error }}</div>
+                <div class="kpi-desc">Cart mutations &amp; prompt injections</div>
+            </div>
+        </div>
+
+        <!-- Registry Table -->
+        <div class="registry-panel">
+            <table class="registry-table" id="registry-table" style="{% if not sessions %}display: none;{% endif %}">
+                <thead>
+                    <tr>
+                        <th style="width: 24%;">Session ID</th>
+                        <th style="width: 14%;">Type / Scope</th>
+                        <th style="width: 16%;">Status</th>
+                        <th style="width: 10%;">Events</th>
+                        <th style="width: 16%;">Agreed Terms</th>
+                        <th style="width: 10%; text-align: right;">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="registry-table-body">
+                    {% for s in sessions %}
+                    <tr id="row-{{ s.session_id }}" onclick="window.location='/dashboard/trace/{{ s.session_id }}'" style="cursor: pointer;">
+                        <td>
+                            <a href="/dashboard/trace/{{ s.session_id }}" style="font-family: var(--font-mono); font-weight: 600; color: var(--accent); text-decoration: none;">
+                                {{ s.session_id }}
+                            </a>
+                            <div style="font-size: 11px; color: var(--muted); font-family: var(--font-mono); margin-top: 2px;">
+                                {{ s.last_timestamp[11:19] if s.last_timestamp|length >= 19 else s.last_timestamp }}
+                            </div>
+                        </td>
+                        <td>
+                            {% if s.kind == 'trading_floor' %}
+                                <span class="badge-tag tag-accent">Trading Floor</span>
+                            {% elif s.kind == 'race' %}
+                                <span class="badge-tag tag-warning">Fairness Race</span>
+                            {% elif s.kind == 'attack' %}
+                                <span class="badge-tag tag-danger">Adversarial</span>
+                            {% elif s.kind == 'validation' %}
+                                <span class="badge-tag tag-neutral">Validation</span>
+                            {% else %}
+                                <span class="badge-tag tag-neutral">Standard</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if 'Converted' in s.status_label %}
+                                <span class="badge-tag tag-success"><span class="status-dot-sm"></span> {{ s.status_label }}</span>
+                            {% elif 'Blocked' in s.status_label or 'Security' in s.status_label %}
+                                <span class="badge-tag tag-danger"><span class="status-dot-sm"></span> {{ s.status_label }}</span>
+                            {% elif 'Repaired' in s.status_label or 'Failed' in s.status_label %}
+                                <span class="badge-tag tag-warning"><span class="status-dot-sm"></span> {{ s.status_label }}</span>
+                            {% else %}
+                                <span class="badge-tag tag-neutral"><span class="status-dot-sm"></span> {{ s.status_label }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="tabular-nums" style="font-family: var(--font-mono); font-size: 12px;">{{ s.event_count }} pkts</td>
+                        <td style="font-family: var(--font-mono); font-weight: 600; color: var(--ink);">
+                            {{ s.final_amount_minor | format_inr }}
+                        </td>
+                        <td style="text-align: right;">
+                            <a href="/dashboard/trace/{{ s.session_id }}" class="btn btn-outline" style="padding: 4px 10px; font-size: 12px;" onclick="event.stopPropagation();">
+                                Trace &rarr;
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div id="registry-empty-state" class="empty-state" style="{% if sessions %}display: none;{% endif %}">
+                <div style="font-size: 28px; margin-bottom: 8px;">&bull;&bull;&bull;</div>
+                <div class="empty-state-title">No Trade Sessions Recorded</div>
+                <div class="empty-state-desc">
+                    Enter the Trading Floor or trigger demo scenarios to populate the persistent trade history.
+                </div>
+                <div style="margin-top: 16px;">
+                    <a href="/live" class="btn btn-primary" style="font-size: 13px;">Enter Trading Floor &rarr;</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

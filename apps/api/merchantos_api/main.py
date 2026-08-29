@@ -7,6 +7,7 @@ from merchantos_api.routers.demo import router as demo_router
 from merchantos_api.routers.health import router as health_router
 from merchantos_api.routers.validation import router as validation_router
 from merchantos_api.routers.webhooks import router as webhooks_router
+from merchantos_api.theater import router as theater_router
 from merchantos_core.config import Settings
 from merchantos_core.ledger.trade_ledger import TradeLedger
 
@@ -32,6 +33,7 @@ def create_app(
 
     app_instance.include_router(dashboard_router)
     app_instance.include_router(demo_router)
+    app_instance.include_router(theater_router)
     app_instance.include_router(validation_router)
     app_instance.include_router(health_router)
     app_instance.include_router(webhooks_router)

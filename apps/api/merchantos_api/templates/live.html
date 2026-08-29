@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+
+{% block title %}The Trading Floor — MerchantOS AI{% endblock %}
+
+{% block content %}
+<section class="section fade-up-element" style="padding-top: 40px; padding-bottom: 64px;">
+    <div class="container">
+        <!-- Page Header -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+            <div>
+                <span class="eyebrow">LIVE THEATRE &middot; REAL-TIME CHOREOGRAPHY</span>
+                <h1 style="font-size: 28px; font-weight: 650; letter-spacing: -0.02em;">The Trading Floor</h1>
+                <p style="color: var(--muted); font-size: 14px; margin-top: 4px; max-width: 720px;">
+                    Watch the five characters act out every commerce trade in real-time &mdash; from natural-language intent through reasoning, invariant audit, and cryptographic settlement.
+                </p>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span id="theater-live-indicator" class="live-dot" style="display: none;"></span>
+                <span id="theater-status-label" class="badge-tag tag-neutral" style="font-size: 11px; padding: 5px 12px;">READY</span>
+            </div>
+        </div>
+
+        <!-- STAGE: FIVE ACTOR CARDS WITH CONNECTORS -->
+        <div class="stage-container" id="theater-stage">
+            <div class="stage-track">
+                <!-- Actor 1: Buyer -->
+                <div class="actor-card" id="actor-buyer" data-actor="buyer">
+                    <div class="actor-header">
+                        <div class="actor-icon-wrap" style="border-color: var(--ink);">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                        </div>
+                        <div>
+                            <div class="actor-name">Robot Customer</div>
+                            <div class="actor-role">Autonomous Buyer Intent</div>
+                        </div>
+                        <div class="actor-status-dot"></div>
+                    </div>
+                    <div class="actor-screen" id="screen-buyer">
+                        <div class="screen-placeholder">Awaiting buyer input...</div>
+                    </div>
+                </div>
+
+                <div class="stage-connector" id="connector-1"><div class="connector-dot"></div></div>
+
+                <!-- Actor 2: Clerk (Visible in Race Mode) -->
+                <div class="actor-card" id="actor-clerk" data-actor="clerk">
+                    <div class="actor-header">
+                        <div class="actor-icon-wrap" style="border-color: #8A8A93;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8A8A93" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                        </div>
+                        <div>
+                            <div class="actor-name">Rulebook Clerk</div>
+                            <div class="actor-role">Keyword Heuristics</div>
+                        </div>
+                        <div class="actor-status-dot"></div>
+                    </div>
+                    <div class="actor-screen" id="screen-clerk">
+                        <div class="screen-placeholder">Passive in Solo mode</div>
+                    </div>
+                </div>
+
+                <div class="stage-connector" id="connector-2"><div class="connector-dot"></div></div>
+
+                <!-- Actor 3: Salesperson -->
+                <div class="actor-card" id="actor-salesperson" data-actor="salesperson">
+                    <div class="actor-header">
+                        <div class="actor-icon-wrap" style="border-color: var(--accent);">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        </div>
+                        <div>
+                            <div class="actor-name">Veteran Salesperson</div>
+                            <div class="actor-role">Contextual Growth Agent</div>
+                        </div>
+                        <div class="actor-status-dot"></div>
+                    </div>
+                    <div class="actor-screen" id="screen-salesperson">
+                        <div class="screen-placeholder">Awaiting intent broadcast...</div>
+                    </div>
+                </div>
+
+                <div class="stage-connector" id="connector-3"><div class="connector-dot"></div></div>
+
+                <!-- Actor 4: Accountant -->
+                <div class="actor-card" id="actor-accountant" data-actor="accountant">
+                    <div class="actor-header">
+                        <div class="actor-icon-wrap" style="border-color: var(--warning);">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        </div>
+                        <div>
+                            <div class="actor-name">The Accountant</div>
+                            <div class="actor-role">CommerceProof Boundary</div>
+                        </div>
+                        <div class="actor-status-dot"></div>
+                    </div>
+                    <div class="actor-screen" id="screen-accountant">
+                        <div class="screen-placeholder">Boundary gate armed...</div>
+                    </div>
+                </div>
+
+                <div class="stage-connector" id="connector-4"><div class="connector-dot"></div></div>
+
+                <!-- Actor 5: Bank -->
+                <div class="actor-card" id="actor-bank" data-actor="bank">
+                    <div class="actor-header">
+                        <div class="actor-icon-wrap" style="border-color: var(--success);">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                        </div>
+                        <div>
+                            <div class="actor-name">Bank + Camera</div>
+                            <div class="actor-role">Razorpay &amp; Webhook Settle</div>
+                        </div>
+                        <div class="actor-status-dot"></div>
+                    </div>
+                    <div class="actor-screen" id="screen-bank">
+                        <div class="screen-placeholder">Ready for authorized order...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RACE COMPARISON BAR (Active only in Race Mode) -->
+        <div id="race-comparison-bar" class="race-bar" style="display: none;">
+            <div class="race-lane" id="race-lane-rules">
+                <span class="eyebrow" style="color: #8A8A93;">RULEBOOK CLERK (BASELINE)</span>
+                <div class="race-lane-title" id="race-rules-title">—</div>
+                <div class="race-lane-price" id="race-rules-price">—</div>
+                <div class="race-lane-status" id="race-rules-status">—</div>
+            </div>
+            <div class="race-vs-badge">VS</div>
+            <div class="race-lane" id="race-lane-growth">
+                <span class="eyebrow" style="color: var(--accent);">VETERAN SALESPERSON (GROWTH)</span>
+                <div class="race-lane-title" id="race-growth-title">—</div>
+                <div class="race-lane-price" id="race-growth-price">—</div>
+                <div class="race-lane-status" id="race-growth-status">—</div>
+            </div>
+        </div>
+
+        <!-- MIDDLE ROW: NARRATION RAIL (LEFT 7) + CONTROLS (RIGHT 5) -->
+        <div class="theater-split-grid">
+            <!-- Left: Narration Rail -->
+            <div class="narration-panel">
+                <div class="narration-header">
+                    <span class="eyebrow" style="margin-bottom: 0;">LIVE NARRATION RAIL</span>
+                    <span style="font-size: 11px; color: var(--muted); font-family: var(--font-mono);">aria-live="polite"</span>
+                </div>
+                <div class="narration-stream" id="narration-rail" aria-live="polite">
+                    <div class="narration-empty">Press <strong>Run the trade</strong> to watch the negotiation unfold in plain English.</div>
+                </div>
+            </div>
+
+            <!-- Right: Controls -->
+            <div class="controls-panel">
+                <div style="margin-bottom: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <label for="theater-utterance" class="eyebrow" style="margin-bottom: 0;">BUYER INTENT UTTERANCE</label>
+                        <button id="btn-random-buyer" class="btn btn-outline" style="padding: 2px 8px; font-size: 11px; display: inline-flex; align-items: center; gap: 4px;">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="8.5" cy="8.5" r="1.5"/><circle cx="15.5" cy="8.5" r="1.5"/><circle cx="8.5" cy="15.5" r="1.5"/><circle cx="15.5" cy="15.5" r="1.5"/><circle cx="12" cy="12" r="1.5"/></svg>
+                            Random Buyer
+                        </button>
+                    </div>
+                    <textarea 
+                        id="theater-utterance" 
+                        class="theater-textarea" 
+                        rows="3" 
+                        maxlength="500"
+                        placeholder="e.g. I want a laptop under 50k, need it fast"
+                    >I want a laptop under 50k, need it fast</textarea>
+                </div>
+
+                <!-- Mode & Live LLM Options -->
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 18px; flex-wrap: wrap;">
+                    <div>
+                        <span class="eyebrow" style="margin-bottom: 4px; display: block;">THEATRE MODE</span>
+                        <div class="segmented-control">
+                            <button id="mode-solo" class="seg-btn active">Solo</button>
+                            <button id="mode-race" class="seg-btn">Race (vs Baseline)</button>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="eyebrow" style="margin-bottom: 4px; display: block;">REASONING ENGINE</span>
+                        <label class="toggle-wrap" title="{% if settings.llm_use_mock or not settings.llm_api_key %}Live LLM requires LLM_USE_MOCK=False and LLM_API_KEY in .env{% endif %}">
+                            <input 
+                                type="checkbox" 
+                                id="toggle-live-llm"
+                                {% if settings.llm_use_mock or not settings.llm_api_key %}disabled{% endif %}
+                            >
+                            <span class="toggle-label" style="font-size: 13px; font-weight: 500;">Live LLM</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Trigger Action Button -->
+                <div>
+                    <button id="btn-run-trade" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 10px 16px; font-size: 14px;">
+                        Run the trade
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- OUTCOME STRIP (Appears after completion) -->
+        <div id="theater-outcome-strip" class="outcome-strip" style="display: none;">
+            <div class="outcome-grid">
+                <div>
+                    <span class="eyebrow">FINAL STATUS</span>
+                    <div class="outcome-val" id="outcome-status-val" style="color: var(--success);">SETTLED</div>
+                </div>
+                <div>
+                    <span class="eyebrow">AGREED PRICE</span>
+                    <div class="outcome-val tabular-nums" id="outcome-price-val">—</div>
+                </div>
+                <div>
+                    <span class="eyebrow">NEGOTIATION ROUNDS</span>
+                    <div class="outcome-val tabular-nums" id="outcome-rounds-val">1</div>
+                </div>
+                <div>
+                    <span class="eyebrow">TOTAL AUDIT EVENTS</span>
+                    <div class="outcome-val tabular-nums" id="outcome-events-val">6 pkts</div>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: flex-end; gap: 8px;">
+                    <a id="btn-outcome-trace" href="#" class="btn btn-outline" style="font-size: 12px; padding: 6px 12px;">Open Full Trace &rarr;</a>
+                    <a href="/history" class="btn btn-outline" style="font-size: 12px; padding: 6px 12px;">See in History</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- EVALUATOR-ONLY GROUND TRUTH REVEAL BOX -->
+        <div id="evaluator-reveal-box" class="reveal-box" style="display: none;">
+            <div class="reveal-header">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="badge-tag tag-warning" style="font-size: 11px;">EVALUATOR REVEAL</span>
+                    <strong style="font-size: 13px; color: var(--ink);">Ground-Truth Benchmark Audit</strong>
+                </div>
+                <span style="font-size: 11px; color: var(--muted); font-family: var(--font-mono);">Never provided to agent prompt</span>
+            </div>
+            <div class="reveal-grid">
+                <div>
+                    <span class="eyebrow">TRUE BUDGET</span>
+                    <div class="reveal-val tabular-nums" id="reveal-budget">—</div>
+                </div>
+                <div>
+                    <span class="eyebrow">PRICE SENSITIVITY</span>
+                    <div class="reveal-val tabular-nums" id="reveal-price-sens">—</div>
+                </div>
+                <div>
+                    <span class="eyebrow">DELIVERY SENSITIVITY</span>
+                    <div class="reveal-val tabular-nums" id="reveal-deliv-sens">—</div>
+                </div>
+                <div>
+                    <span class="eyebrow">NLG DIVERGENCE</span>
+                    <div class="reveal-val tabular-nums" id="reveal-divergence">—</div>
+                </div>
+            </div>
+            <div style="margin-top: 12px; padding-top: 10px; border-top: 1px dashed rgba(180, 83, 9, 0.2); font-size: 12.5px; color: var(--ink);" id="reveal-reason-text">
+                —
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/theater.js"></script>
+{% endblock %}

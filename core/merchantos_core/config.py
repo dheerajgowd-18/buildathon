@@ -29,6 +29,9 @@ class Settings(BaseSettings):
     llm_base_url: str = "https://api.groq.com/openai/v1"
     llm_model_name: str = "openai/gpt-oss-120b"
 
+    # Ledger Persistence
+    ledger_persist_enabled: bool = False
+
     @model_validator(mode="after")
     def validate_live_credentials(self) -> "Settings":
         """Fail fast if live mode is enabled but required secrets are missing."""

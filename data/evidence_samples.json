@@ -1,0 +1,266 @@
+[
+  {
+    "scenario_id": "dev_001",
+    "utterance": "Looking for a laptop under \u20b985,000. Main focus is high performance and speed. need it delivered within 1 days. preferences: no delayed shipping, nothing too heavy or bulky.",
+    "category": "laptops",
+    "divergence": 0.1,
+    "true_budget_minor": 8500000,
+    "price_sensitivity": 0.45,
+    "delivery_sensitivity": 0.42,
+    "rules": {
+      "status": "converted",
+      "final_price_minor": 3600000,
+      "rounds": 1,
+      "gate_repairs": 0
+    },
+    "growth": {
+      "status": "converted",
+      "final_price_minor": 3600000,
+      "rounds": 1,
+      "gate_repairs": 0
+    },
+    "growth_won": true
+  },
+  {
+    "scenario_id": "dev_004",
+    "utterance": "Looking for a tablet under \u20b944,000. Main focus is easy portability. need it delivered within 1 days. preferences: nothing too heavy or bulky, avoid poor battery backup.",
+    "category": "tablets",
+    "divergence": 0.1,
+    "true_budget_minor": 4400000,
+    "price_sensitivity": 0.39,
+    "delivery_sensitivity": 0.15,
+    "rules": {
+      "status": "converted",
+      "final_price_minor": 2200000,
+      "rounds": 1,
+      "gate_repairs": 0
+    },
+    "growth": {
+      "status": "converted",
+      "final_price_minor": 2200000,
+      "rounds": 1,
+      "gate_repairs": 0
+    },
+    "growth_won": true
+  },
+  {
+    "scenario_id": "dev_005",
+    "utterance": "Looking for tablets under Rs. 23310. Need discount.",
+    "category": "tablets",
+    "divergence": 0.1,
+    "true_budget_minor": 2331000,
+    "price_sensitivity": 0.66,
+    "delivery_sensitivity": 0.52,
+    "rules": {
+      "status": "max_rounds_reached",
+      "final_price_minor": null,
+      "rounds": 3,
+      "gate_repairs": 1
+    },
+    "growth": {
+      "status": "rejected",
+      "final_price_minor": null,
+      "rounds": 1,
+      "gate_repairs": 0
+    },
+    "growth_won": false
+  },
+  {
+    "scenario_id": "dev_006",
+    "utterance": "Looking for a audio device under \u20b913,000. Main focus is clear microphone for calls. need it delivered within 1 days.",
+    "category": "audio",
+    "divergence": 0.1,
+    "true_budget_minor": 1300000,
+    "price_sensitivity": 0.27,
+    "delivery_sensitivity": 0.59,
+    "rules": {
+      "status": "converted",
+      "final_price_minor": 180000,
+      "rounds": 1,
+      "gate_repairs": 0
+    },
+    "growth": {
+      "status": "converted",
+      "final_price_minor": 167456,
+      "rounds": 2,
+      "gate_repairs": 0
+    },
+    "growth_won": false
+  },
+  {
+    "scenario_id": "dev_008",
+    "utterance": "Interested in a smartwatch with decent all-day battery life around 20k. Note: main requirement is all-day battery life.",
+    "category": "smartwatches",
+    "divergence": 0.4,
+    "true_budget_minor": 2000000,
+    "price_sensitivity": 0.14,
+    "delivery_sensitivity": 0.66,
+    "rules": {
+      "status": "max_rounds_reached",
+      "final_price_minor": null,
+      "rounds": 3,
+      "gate_repairs": 0
+    },
+    "growth": {
+      "status": "converted",
+      "final_price_minor": 440000,
+      "rounds": 2,
+      "gate_repairs": 0
+    },
+    "growth_won": true
+  },
+  {
+    "scenario_id": "dev_011",
+    "utterance": "Need a good audio device in the \u20b913,000 range.",
+    "category": "audio",
+    "divergence": 0.4,
+    "true_budget_minor": 1300000,
+    "price_sensitivity": 0.66,
+    "delivery_sensitivity": 0.44,
+    "rules": {
+      "status": "converted",
+      "final_price_minor": 600000,
+      "rounds": 1,
+      "gate_repairs": 0
+    },
+    "growth": {
+      "status": "converted",
+      "final_price_minor": 600000,
+      "rounds": 1,
+      "gate_repairs": 0
+    },
+    "growth_won": true
+  },
+  {
+    "scenario_id": "dev_013",
+    "utterance": "Need a good tablet in the \u20b949,000 range. Note: main requirement is budget affordability, standard shipping is okay, must have brand warranty.",
+    "category": "tablets",
+    "divergence": 0.4,
+    "true_budget_minor": 4900000,
+    "price_sensitivity": 0.43,
+    "delivery_sensitivity": 0.87,
+    "rules": {
+      "status": "max_rounds_reached",
+      "final_price_minor": null,
+      "rounds": 3,
+      "gate_repairs": 0
+    },
+    "growth": {
+      "status": "converted",
+      "final_price_minor": 1254943,
+      "rounds": 2,
+      "gate_repairs": 0
+    },
+    "growth_won": true
+  },
+  {
+    "scenario_id": "dev_019",
+    "utterance": "Looking to buy a laptop with budget around 37k.",
+    "category": "laptops",
+    "divergence": 0.4,
+    "true_budget_minor": 3700000,
+    "price_sensitivity": 0.48,
+    "delivery_sensitivity": 0.94,
+    "rules": {
+      "status": "max_rounds_reached",
+      "final_price_minor": null,
+      "rounds": 3,
+      "gate_repairs": 0
+    },
+    "growth": {
+      "status": "converted",
+      "final_price_minor": 3018754,
+      "rounds": 2,
+      "gate_repairs": 0
+    },
+    "growth_won": true
+  },
+  {
+    "scenario_id": "dev_000",
+    "utterance": "Need a budget-friendly tablet, want to keep costs minimal. Also, delivery timing is flexible.",
+    "category": "tablets",
+    "divergence": 0.8,
+    "true_budget_minor": 4500000,
+    "price_sensitivity": 0.55,
+    "delivery_sensitivity": 0.93,
+    "rules": {
+      "status": "blocked_by_gate",
+      "final_price_minor": null,
+      "rounds": 1,
+      "gate_repairs": 0
+    },
+    "growth": {
+      "status": "blocked_by_gate",
+      "final_price_minor": null,
+      "rounds": 1,
+      "gate_repairs": 0
+    },
+    "growth_won": false
+  },
+  {
+    "scenario_id": "dev_002",
+    "utterance": "Need a budget-friendly smartwatch, want to keep costs minimal. Also, need expedited delivery if possible.",
+    "category": "smartwatches",
+    "divergence": 0.8,
+    "true_budget_minor": 2000000,
+    "price_sensitivity": 0.34,
+    "delivery_sensitivity": 0.21,
+    "rules": {
+      "status": "converted",
+      "final_price_minor": 770000,
+      "rounds": 1,
+      "gate_repairs": 0
+    },
+    "growth": {
+      "status": "converted",
+      "final_price_minor": 770000,
+      "rounds": 1,
+      "gate_repairs": 0
+    },
+    "growth_won": true
+  },
+  {
+    "scenario_id": "dev_003",
+    "utterance": "Need a budget-friendly tablet, want to keep costs minimal. Also, would prefer delivery by tomorrow.",
+    "category": "tablets",
+    "divergence": 0.8,
+    "true_budget_minor": 4900000,
+    "price_sensitivity": 0.56,
+    "delivery_sensitivity": 0.44,
+    "rules": {
+      "status": "converted",
+      "final_price_minor": 2170000,
+      "rounds": 1,
+      "gate_repairs": 0
+    },
+    "growth": {
+      "status": "converted",
+      "final_price_minor": 2170000,
+      "rounds": 1,
+      "gate_repairs": 0
+    },
+    "growth_won": true
+  },
+  {
+    "scenario_id": "dev_007",
+    "utterance": "Looking for an entry-level laptop strictly under 89k. Also, would prefer delivery by tomorrow.",
+    "category": "laptops",
+    "divergence": 0.8,
+    "true_budget_minor": 8900000,
+    "price_sensitivity": 0.54,
+    "delivery_sensitivity": 0.15,
+    "rules": {
+      "status": "converted",
+      "final_price_minor": 3320000,
+      "rounds": 1,
+      "gate_repairs": 0
+    },
+    "growth": {
+      "status": "converted",
+      "final_price_minor": 3320000,
+      "rounds": 1,
+      "gate_repairs": 0
+    },
+    "growth_won": true
+  }
+]

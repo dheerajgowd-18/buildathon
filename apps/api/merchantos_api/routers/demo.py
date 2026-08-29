@@ -47,20 +47,13 @@ def _clean_utterance(text: str) -> str:
     return cleaned
 
 
-@router.get("/demo", response_class=HTMLResponse)
-async def demo_console_page(
-    request: Request,
-    settings: Annotated[Settings, Depends(get_settings)],
-) -> HTMLResponse:
-    """Render the Interactive Demo Console and sandbox showroom."""
-    return templates.TemplateResponse(
-        request=request,
-        name="demo.html",
-        context={
-            "settings": settings,
-            "active_nav": "demo",
-        },
-    )
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, StreamingResponse
+
+
+@router.get("/demo")
+async def demo_console_page() -> RedirectResponse:
+    """Redirect legacy /demo route to The Trading Floor (/live)."""
+    return RedirectResponse(url="/live", status_code=status.HTTP_302_FOUND)
 
 
 @router.get("/api/events")

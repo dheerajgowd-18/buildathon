@@ -52,29 +52,32 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 pip install -e ".[dev]"
 ```
 
-### 2. Run All Automated Tests (116 Tests)
+### 2. Run All Automated Tests
 ```bash
 # Run unit, integration, adversarial, and dashboard test suites
-pytest -v
+pytest -q
 ```
 
-### 3. Run Benchmark Evaluation Engine
+### 3. Generate Evidence & Run Benchmark Evaluation
 ```bash
 # Run paired evaluation on 100-scenario dev split
 python scripts/run_evaluation.py --dataset dev
 
-# Run paired evaluation on 50-scenario heldout split
-python scripts/run_evaluation.py --dataset heldout
+# Generate stratified benchmark evidence and adversarial attack records
+python scripts/generate_evidence_samples.py
+python scripts/generate_adversarial_evidence.py
 ```
 
-### 4. Launch the Judge Dashboard & API Server
+### 4. Launch the Live Trading Floor & Web Console
 ```bash
 # Start FastAPI application
 uvicorn merchantos_api.main:app --reload --port 8000
 ```
-Open your browser and navigate to:
-- **Static Judge Dashboard**: [http://localhost:8000/dashboard](http://localhost:8000/dashboard) (or `http://localhost:8000/`)
-- **API Health Check**: [http://localhost:8000/healthz](http://localhost:8000/healthz)
+Open your browser to explore:
+- **The Trading Floor**: [http://localhost:8000/live](http://localhost:8000/live) (5-actor live choreography & fairness races)
+- **The Evidence Lab**: [http://localhost:8000/evidence](http://localhost:8000/evidence) (paired divergence curves & attack proofs)
+- **Session History & Archive**: [http://localhost:8000/history](http://localhost:8000/history) (persistent ledger audit records)
+- **Validation Center**: [http://localhost:8000/validation](http://localhost:8000/validation) (live Razorpay + LLM connectivity proofs)
 
 ---
 

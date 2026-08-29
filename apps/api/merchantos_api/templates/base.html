@@ -19,14 +19,24 @@
                     </a>
                     <nav class="nav-links">
                         <a href="/" class="nav-link {% if active_nav == 'overview' %}active{% endif %}">Overview</a>
-                        <a href="/dashboard" class="nav-link {% if active_nav == 'dashboard' %}active{% endif %}">Live Ledger</a>
-                        <a href="/demo" class="nav-link {% if active_nav == 'demo' %}active{% endif %}">Demo Console</a>
+                        <a href="/live" class="nav-link {% if active_nav == 'live' %}active{% endif %}">Trading Floor</a>
+                        <a href="/history" class="nav-link {% if active_nav == 'history' or active_nav == 'dashboard' %}active{% endif %}">History</a>
+                        <a href="/evidence" class="nav-link {% if active_nav == 'evidence' %}active{% endif %}">Evidence</a>
                         <a href="/validation" class="nav-link {% if active_nav == 'validation' %}active{% endif %}">Validation</a>
                     </nav>
                 </div>
-                <div class="topbar-right">
+                <div class="topbar-right" style="display: flex; align-items: center; gap: 8px;">
+                    {% if health %}
+                    <a href="/validation" class="badge-tag {% if health.llm_state == 'success' %}tag-accent{% elif health.llm_state == 'danger' %}tag-danger{% else %}tag-neutral{% endif %}" style="text-decoration: none; font-size: 11px; padding: 3px 8px;">
+                        {{ health.llm_chip }}
+                    </a>
+                    <a href="/validation" class="badge-tag {% if health.rzp_state == 'success' %}tag-success{% elif health.rzp_state == 'danger' %}tag-danger{% else %}tag-neutral{% endif %}" style="text-decoration: none; font-size: 11px; padding: 3px 8px;">
+                        {{ health.rzp_chip }}
+                    </a>
+                    {% else %}
                     <span class="live-dot" aria-hidden="true"></span>
-                    <span>Sandbox only</span>
+                    <span style="font-size: 12px; color: var(--muted);">Sandbox only</span>
+                    {% endif %}
                 </div>
             </div>
         </div>

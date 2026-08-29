@@ -10,16 +10,20 @@ from merchantos_core.config import Settings
 from merchantos_core.ledger.trade_ledger import TradeLedger
 
 
-def test_demo_page_renders() -> None:
-    """GET /demo returns 200 with Demo Console UI and controls."""
+def test_demo_page_redirects_to_live() -> None:
+    """GET /demo returns 302 redirecting to /live, and GET /live renders The Trading Floor controls."""
     app = create_app(settings=Settings(_env_file=None, razorpay_use_mock=True, llm_use_mock=True))
     client = TestClient(app)
 
-    res = client.get("/demo")
-    assert res.status_code == 200
-    assert "text/html" in res.headers["content-type"]
-    assert "Interactive Demo Console" in res.text
-    assert "Negotiate — Mock LLM" in res.text or "Negotiate &mdash; Mock LLM" in res.text
+    res = client.get("/demo", follow_redirects=False)
+    assert res.status_code == 302
+    assert res.headers["location"] == "/live"
+
+    res_live = client.get("/live")
+    assert res_live.status_code == 200
+    assert "text/html" in res_live.headers["content-type"]
+    assert "The Trading Floor" in res_live.text
+    assert "Run the trade" in res_live.text
 
 
 def test_demo_negotiate_valid() -> None:
@@ -112,13 +116,13 @@ def test_demo_live_order_disabled_when_mock() -> None:
 
 
 def test_demo_live_llm_button_disabled_in_html() -> None:
-    """GET /demo shows disabled attribute on Live LLM button when llm_use_mock is True."""
+    """GET /live shows disabled attribute on Live LLM toggle when llm_use_mock is True."""
     app = create_app(settings=Settings(_env_file=None, razorpay_use_mock=True, llm_use_mock=True))
     client = TestClient(app)
 
-    res = client.get("/demo")
+    res = client.get("/live")
     assert res.status_code == 200
-    assert 'id="btn-negotiate-live"' in res.text
+    assert 'id="toggle-live-llm"' in res.text
     assert "disabled" in res.text
 
 

@@ -74,3 +74,11 @@ FREEZE_COMMIT_HASH: a7f89d4e21b06c8842e61df3e0d869b2d8e4c19a
 FREEZE_DATE: 2026-08-27
 DATASET_SPLITS: dev (100 scenarios, seed 42-141), heldout (50 scenarios, seed 142-191)
 ```
+
+Frozen at commit: <HASH-PENDING>
+
+---
+
+## Limitations
+
+Paired evaluation uses 150 seed-locked scenarios (100 dev / 50 held-out), below the 2,000+ the full plan aspires to; the treatment arm runs against the deterministic MockLLMProvider in the benchmark to keep the paired design reproducible and zero-cost, while live-LLM connectivity is verified separately in the Validation Center. The divergence-curve direction is consistent across dev and held-out; bootstrap CIs are omitted at this sample size. Synthetic evaluation is not production evidence.

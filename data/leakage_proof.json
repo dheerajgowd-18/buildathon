@@ -1,0 +1,20 @@
+{
+  "scenarios_scanned": 100,
+  "field_names_checked": [
+    "priority",
+    "category",
+    "budget_max_minor",
+    "stated_vs_true_divergence",
+    "price_sensitivity",
+    "delivery_sensitivity"
+  ],
+  "raw_values_checked": [
+    "raw integer minor units (paise)"
+  ],
+  "leaks_found": 0,
+  "sample_utterances": [
+    "Looking for a laptop under \u20b985,000. Main focus is high performance and speed. need it delivered within 1 days. preferences: no delayed shipping, nothing too heavy or bulky.",
+    "Looking for a tablet under \u20b944,000. Main focus is easy portability. need it delivered within 1 days. preferences: nothing too heavy or bulky, avoid poor battery backup.",
+    "Looking for tablets under Rs. 23310. Need discount."
+  ]
+}
