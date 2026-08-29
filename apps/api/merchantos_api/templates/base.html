@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MerchantOS AI — Autonomous Merchant Intelligence{% endblock %}</title>
+    <link rel="stylesheet" href="/static/design.css">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <header class="topbar">
+        <div class="container">
+            <div class="topbar-inner">
+                <div class="topbar-left">
+                    <a href="/" class="brand-wrap">
+                        <span class="brand-wordmark">MerchantOS AI</span>
+                        <span class="badge-pill-mode">TEST MODE</span>
+                    </a>
+                    <nav class="nav-links">
+                        <a href="/" class="nav-link {% if active_nav == 'overview' %}active{% endif %}">Overview</a>
+                        <a href="/dashboard" class="nav-link {% if active_nav == 'dashboard' %}active{% endif %}">Live Ledger</a>
+                        <a href="/demo" class="nav-link {% if active_nav == 'demo' %}active{% endif %}">Demo Console</a>
+                        <a href="/validation" class="nav-link {% if active_nav == 'validation' %}active{% endif %}">Validation</a>
+                    </nav>
+                </div>
+                <div class="topbar-right">
+                    <span class="live-dot" aria-hidden="true"></span>
+                    <span>Sandbox only</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-inner">
+                <div>Razorpay AI Buildathon 2026 &mdash; Track 01 (AI Growth &amp; Agentic Commerce)</div>
+                <div>freeze: v1.0.0-submission-freeze</div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Frontend Live SSE & Interactivity Script -->
+    <script src="/static/live.js"></script>
+
+    <!-- IntersectionObserver Motion Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (!prefersReducedMotion && 'IntersectionObserver' in window) {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('is-visible');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.08, rootMargin: "0px 0px -40px 0px" });
+
+                document.querySelectorAll('.fade-up-element').forEach(el => observer.observe(el));
+            } else {
+                document.querySelectorAll('.fade-up-element').forEach(el => el.classList.add('is-visible'));
+            }
+        });
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

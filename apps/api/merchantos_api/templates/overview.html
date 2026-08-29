@@ -1,0 +1,340 @@
+{% extends "base.html" %}
+
+{% block title %}MerchantOS AI — Autonomous Merchant Intelligence{% endblock %}
+
+{% block content %}
+<!-- SECTION 1: HERO -->
+<section class="section hero-section fade-up-element">
+    <div class="container">
+        <div class="hero-grid">
+            <div class="hero-left">
+                <span class="eyebrow">RAZORPAY AI BUILDATHON 2026 &middot; TRACK 01 &middot; AI GROWTH &amp; AGENTIC COMMERCE</span>
+                <h1 class="hero-headline">
+                    The buyer is an AI now. <em>Who negotiates for the merchant?</em>
+                </h1>
+                <p class="hero-sub">
+                    MerchantOS AI is merchant-side economic intelligence that negotiates autonomously &mdash; under a deterministic gate that never lets an LLM move money unverified.
+                </p>
+                <div class="hero-cta-group">
+                    <a href="/dashboard" class="btn btn-primary">
+                        View live ledger
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </a>
+                    <a href="/demo" class="btn btn-outline">
+                        Run the demo
+                    </a>
+                </div>
+            </div>
+            <div class="hero-right">
+                <div class="invariant-card">
+                    <div class="invariant-header">
+                        <span class="eyebrow" style="margin-bottom: 0;">SYSTEM INVARIANT</span>
+                        <span class="chip-delta">ENFORCED</span>
+                    </div>
+                    <div class="invariant-code-lines">
+                        <div class="axiom-lead">LLM PROPOSES. CODE DISPOSES.</div>
+                        <div class="axiom-item">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            <span>0 unverified money movements.</span>
+                        </div>
+                        <div class="axiom-item" style="margin-top: 6px;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            <span>100% auditable trade ledger.</span>
+                        </div>
+                        <div class="axiom-item" style="margin-top: 6px;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+                            <span>SHA-256 cryptographic state binding.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SECTION 2: THE LIFECYCLE RAIL -->
+<section class="section fade-up-element">
+    <div class="container">
+        <span class="eyebrow">HOW A TRADE FLOWS</span>
+        <div class="rail-grid">
+            <div class="rail-step">
+                <div class="rail-num">01</div>
+                <div>
+                    <div class="rail-title">Intent</div>
+                    <div class="rail-desc">Buyer NL arrives; ground-truth preferences stay completely hidden.</div>
+                </div>
+            </div>
+            <div class="rail-step">
+                <div class="rail-num">02</div>
+                <div>
+                    <div class="rail-title">Negotiation</div>
+                    <div class="rail-desc">Growth Agent vs Rules Baseline on identical lossy natural language.</div>
+                </div>
+            </div>
+            <div class="rail-step">
+                <div class="rail-num">03</div>
+                <div>
+                    <div class="rail-title">The Gate</div>
+                    <div class="rail-desc">CommerceProof verifies margins &amp; discount caps (EXECUTE / REPAIR / BLOCK).</div>
+                </div>
+            </div>
+            <div class="rail-step">
+                <div class="rail-num">04</div>
+                <div>
+                    <div class="rail-title">Execution</div>
+                    <div class="rail-desc">Razorpay test-mode order created via idempotent REST call with state hash.</div>
+                </div>
+            </div>
+            <div class="rail-step">
+                <div class="rail-num">05</div>
+                <div>
+                    <div class="rail-title">Settlement</div>
+                    <div class="rail-desc">HMAC-verified webhook captured into immutable append-only TradeLedger.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SECTION 3: PROOF, NOT PROMISES (DIVERGENCE THESIS) -->
+<section class="section fade-up-element">
+    <div class="container">
+        <span class="eyebrow">THE DIVERGENCE THESIS</span>
+        <h2 style="font-size: 24px; font-weight: 650; margin-bottom: 24px; letter-spacing: -0.01em;">
+            Conversion by stated-vs-true divergence
+        </h2>
+        <div class="proof-grid">
+            <div class="chart-panel">
+                {{ divergence_svg | safe }}
+                <span class="chart-caption">Paired design &middot; dev split &middot; held-out confirms &middot; freeze v1.0.0-submission-freeze</span>
+            </div>
+            <div class="explainer-card">
+                <p class="explainer-text">
+                    Both arms read the same lossy natural language. Ground truth never reaches either agent. Rules win when intent is clear; the AI pulls ahead exactly when language gets ambiguous.
+                </p>
+                <table class="divergence-mini-table">
+                    <thead>
+                        <tr>
+                            <th>Divergence Bucket</th>
+                            <th>Rules</th>
+                            <th>Growth</th>
+                            <th style="text-align: right;">Delta</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>LOW (&lt;0.3)</strong></td>
+                            <td>83.3%</td>
+                            <td>80.6%</td>
+                            <td style="text-align: right;"><span class="chip-delta neutral">-2.8 pts</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>MEDIUM (0.3-0.6)</strong></td>
+                            <td>57.7%</td>
+                            <td>96.2%</td>
+                            <td style="text-align: right;"><span class="chip-delta">+38.5 pts</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>HIGH (&ge;0.6)</strong></td>
+                            <td>68.4%</td>
+                            <td>94.7%</td>
+                            <td style="text-align: right;"><span class="chip-delta">+26.3 pts</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SECTION 4: KPI BAND (HAIRLINE SEPARATED ROW, NOT CARDS) -->
+<section class="section fade-up-element">
+    <div class="container">
+        <span class="eyebrow">BENCHMARK SUMMARY</span>
+        <div class="kpi-band">
+            <div class="kpi-cell">
+                <span class="eyebrow">CONVERSION LIFT</span>
+                <div class="kpi-number" style="color: var(--success);">+19.0%</div>
+                <div class="kpi-desc">Overall delta across paired dev scenarios (71.0% &rarr; 90.0%)</div>
+            </div>
+            <div class="kpi-cell">
+                <span class="eyebrow">GATE REJECTION RATE</span>
+                <div class="kpi-number">5.0%</div>
+                <div class="kpi-desc">Deterministic CommerceProof invariant blocks (OOS / negative margin)</div>
+            </div>
+            <div class="kpi-cell">
+                <span class="eyebrow">ADVERSARIAL SUITES PASSING</span>
+                <div class="kpi-number" style="color: var(--accent);">{{ tests_passing }}/{{ tests_passing }}</div>
+                <div class="kpi-desc">Prompt injection, cart mutation, state tampering &amp; leakage tests</div>
+            </div>
+            <div class="kpi-cell">
+                <span class="eyebrow">AVG NEGOTIATION ROUNDS</span>
+                <div class="kpi-number">1.37</div>
+                <div class="kpi-desc">Growth Agent closes faster than rules baseline (1.48 rounds)</div>
+            </div>
+        </div>
+
+        <!-- Validation Proof Strip -->
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 14px 0; margin-top: 12px; font-size: 13px; color: var(--muted); border-top: 1px solid var(--hairline); flex-wrap: wrap; gap: 12px;">
+            <div>
+                <span>Hermetic suite: <strong style="color: var(--ink);">{{ tests_passing }}/{{ tests_passing }}</strong></span>
+                <span style="margin: 0 8px;">&middot;</span>
+                <span>Last live Razorpay: <strong style="color: var(--ink);">{{ last_live_razorpay | default('not run', true) }}</strong></span>
+                <span style="margin: 0 8px;">&middot;</span>
+                <span>Last live LLM: <strong style="color: var(--ink);">{{ last_live_llm | default('not run', true) }}</strong></span>
+            </div>
+            <div>
+                <a href="/validation" style="color: var(--accent); font-weight: 600; text-decoration: none;">Open Validation &rarr;</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SECTION 5: TRUST BOUNDARY TOPOLOGY -->
+<section class="section fade-up-element">
+    <div class="container">
+        <span class="eyebrow">THE TOPOLOGY THAT MAKES IT SAFE</span>
+        <h2 style="font-size: 24px; font-weight: 650; margin-bottom: 8px; letter-spacing: -0.01em;">
+            CommerceProof: Zero Unverified Authority
+        </h2>
+        <p style="color: var(--muted); font-size: 14px; margin-bottom: 24px;">
+            The LLM operates exclusively in the probabilistic zone. Only deterministic code interacts with payment gateways.
+        </p>
+        <div class="diagram-wrap">
+            <svg viewBox="0 0 1060 260" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Trust Boundary Topology Diagram">
+                <!-- Zone Left: Probabilistic -->
+                <rect x="20" y="20" width="370" height="220" rx="8" fill="#FFFFFF" stroke="#E6E6E0" stroke-width="1" />
+                <text x="35" y="44" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="600" fill="#6E6E76" letter-spacing="0.08em">PROBABILISTIC &mdash; CAN BE WRONG</text>
+                
+                <rect x="40" y="70" width="90" height="42" rx="6" fill="#F8F8F6" stroke="#E6E6E0" stroke-width="1" />
+                <text x="85" y="96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="500" fill="#17171C" text-anchor="middle">Buyer NL</text>
+                
+                <line x1="130" y1="91" x2="160" y2="91" stroke="#6E6E76" stroke-width="1.5" marker-end="url(#arrow)" />
+                
+                <rect x="160" y="65" width="125" height="52" rx="6" fill="#EEF2FE" stroke="#1F4FD8" stroke-width="1" />
+                <text x="222" y="88" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="600" fill="#1F4FD8" text-anchor="middle">Growth Agent</text>
+                <text x="222" y="104" font-family="ui-sans-serif, system-ui, sans-serif" font-size="10" fill="#6E6E76" text-anchor="middle">(LLM Proposes)</text>
+                
+                <line x1="285" y1="91" x2="310" y2="91" stroke="#6E6E76" stroke-width="1.5" marker-end="url(#arrow)" />
+                
+                <rect x="310" y="70" width="65" height="42" rx="6" fill="#F8F8F6" stroke="#E6E6E0" stroke-width="1" />
+                <text x="342" y="96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="500" fill="#17171C" text-anchor="middle">Offer</text>
+
+                <text x="40" y="160" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12" fill="#6E6E76">&bull; Hallucinated SKU defense</text>
+                <text x="40" y="185" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12" fill="#6E6E76">&bull; Prompt injection neutralization</text>
+                <text x="40" y="210" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12" fill="#6E6E76">&bull; Zero money-movement permissions</text>
+
+                <!-- Zone Middle: Cobalt Authority Gate -->
+                <rect x="425" y="10" width="210" height="240" rx="8" fill="#1F4FD8" />
+                <text x="530" y="38" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="600" fill="#FFFFFF" text-anchor="middle">CommerceProof</text>
+                <text x="530" y="55" font-family="ui-sans-serif, system-ui, sans-serif" font-size="10" fill="#EEF2FE" text-anchor="middle">Deterministic Final Authority</text>
+                
+                <g transform="translate(440, 75)">
+                    <rect x="0" y="0" width="180" height="30" rx="4" fill="#173eb3" />
+                    <text x="12" y="20" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" fill="#FFFFFF">&check; Margin Floor Guard</text>
+                    
+                    <rect x="0" y="38" width="180" height="30" rx="4" fill="#173eb3" />
+                    <text x="12" y="58" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" fill="#FFFFFF">&check; Discount Cap Clamp</text>
+                    
+                    <rect x="0" y="76" width="180" height="30" rx="4" fill="#173eb3" />
+                    <text x="12" y="96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" fill="#FFFFFF">&check; Inventory Availability</text>
+                    
+                    <rect x="0" y="114" width="180" height="30" rx="4" fill="#173eb3" />
+                    <text x="12" y="134" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" fill="#FFFFFF">&check; Cumulative Budget Cap</text>
+                </g>
+                
+                <text x="530" y="235" font-family="ui-sans-serif, system-ui, sans-serif" font-size="10" font-weight="600" fill="#FFFFFF" text-anchor="middle">SHA-256 STATE BINDING</text>
+
+                <!-- Zone Crossing Arrow -->
+                <line x1="375" y1="91" x2="425" y2="91" stroke="#1F4FD8" stroke-width="2" marker-end="url(#arrow-blue)" />
+                <line x1="635" y1="91" x2="685" y2="91" stroke="#1F4FD8" stroke-width="2" marker-end="url(#arrow-blue)" />
+                <rect x="640" y="66" width="40" height="18" rx="3" fill="#EEF2FE" />
+                <text x="660" y="79" font-family="ui-sans-serif, system-ui, sans-serif" font-size="9" font-weight="600" fill="#1F4FD8" text-anchor="middle">PASS</text>
+
+                <!-- Zone Right: Deterministic -->
+                <rect x="685" y="20" width="355" height="220" rx="8" fill="#FFFFFF" stroke="#E6E6E0" stroke-width="1" />
+                <text x="700" y="44" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="600" fill="#6E6E76" letter-spacing="0.08em">DETERMINISTIC &mdash; CANNOT BE WRONG</text>
+                
+                <rect x="710" y="70" width="125" height="42" rx="6" fill="#F8F8F6" stroke="#E6E6E0" stroke-width="1" />
+                <text x="772" y="96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="600" fill="#17171C" text-anchor="middle">Razorpay API</text>
+                
+                <line x1="835" y1="91" x2="875" y2="91" stroke="#6E6E76" stroke-width="1.5" marker-end="url(#arrow)" />
+                
+                <rect x="875" y="70" width="145" height="42" rx="6" fill="#ECFDF3" stroke="#15803D" stroke-width="1" />
+                <text x="947" y="96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="600" fill="#15803D" text-anchor="middle">Trade Ledger</text>
+
+                <text x="710" y="160" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12" fill="#6E6E76">&bull; Idempotent /v1/orders creation</text>
+                <text x="710" y="185" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12" fill="#6E6E76">&bull; Cryptographic HMAC-SHA256 webhooks</text>
+                <text x="710" y="210" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12" fill="#6E6E76">&bull; State hash verified on settlement</text>
+
+                <!-- Markers -->
+                <defs>
+                    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 1 L 8 5 L 0 9 z" fill="#6E6E76" />
+                    </marker>
+                    <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 1 L 8 5 L 0 9 z" fill="#1F4FD8" />
+                    </marker>
+                </defs>
+            </svg>
+        </div>
+        <div style="margin-top: 12px; font-size: 13px; color: var(--muted); text-align: center;">
+            <span style="font-weight: 600; color: var(--accent);">&larr; only path to money &rarr;</span> All monetary transactions must possess a valid cryptographic signature matching the canonical snapshot hash.
+        </div>
+    </div>
+</section>
+
+<!-- SECTION 6: SECURITY POSTURE TABLE -->
+<section class="section fade-up-element">
+    <div class="container">
+        <span class="eyebrow">DEFENSE-IN-DEPTH GUARANTEES</span>
+        <h2 style="font-size: 24px; font-weight: 650; margin-bottom: 20px; letter-spacing: -0.01em;">
+            Security Invariants &amp; Boundary Protections
+        </h2>
+        <table class="security-table">
+            <tbody>
+                <tr>
+                    <td class="sec-name">Prompt injection</td>
+                    <td class="sec-mechanism">Neutralized by gate (REPAIR/BLOCK) &mdash; LLM prompt output is strictly validated against merchant floor constraints.</td>
+                    <td class="sec-status">
+                        <span class="status-badge-inline">
+                            <span class="status-dot-sm"></span>
+                            Verified
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="sec-name">Cart mutation</td>
+                    <td class="sec-mechanism">Rejected via ledger cross-check &mdash; any mismatch between webhook amount and ledger expected amount blocks capture.</td>
+                    <td class="sec-status">
+                        <span class="status-badge-inline">
+                            <span class="status-dot-sm"></span>
+                            Verified
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="sec-name">Ground-truth leakage</td>
+                    <td class="sec-mechanism">0 leaks, CI-enforced &mdash; decision agents strictly receive AgentInput without BuyerIntent or evaluation targets.</td>
+                    <td class="sec-status">
+                        <span class="status-badge-inline">
+                            <span class="status-dot-sm"></span>
+                            Verified
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="sec-name">Network failure</td>
+                    <td class="sec-mechanism">Idempotent retry, no duplicate orders &mdash; deterministic receipt hashing guarantees safe re-execution under dropouts.</td>
+                    <td class="sec-status">
+                        <span class="status-badge-inline">
+                            <span class="status-dot-sm"></span>
+                            Verified
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

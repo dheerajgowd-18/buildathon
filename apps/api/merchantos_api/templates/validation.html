@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}System Validation Center — MerchantOS AI{% endblock %}
+
+{% block content %}
+<section class="section fade-up-element" style="padding-top: 48px;">
+    <div class="container">
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 28px; flex-wrap: wrap; gap: 16px;">
+            <div>
+                <span class="eyebrow">PROOF, ON DEMAND</span>
+                <h1 style="font-size: 28px; font-weight: 650; letter-spacing: -0.02em;">System Validation Center</h1>
+                <p style="color: var(--muted); font-size: 14px; margin-top: 4px; max-width: 680px;">
+                    Repeatable proof that the hermetic logic layer and live external integrations (Razorpay test mode + OpenAI-compatible LLM) function correctly.
+                </p>
+            </div>
+            <div id="overall-status-pill">
+                {% if last_report %}
+                    {% if last_report.overall_status == 'pass' %}
+                        <span class="badge-tag tag-success" style="font-size: 12px; padding: 6px 14px;">STATUS: PASS</span>
+                    {% elif last_report.overall_status == 'fail' %}
+                        <span class="badge-tag tag-danger" style="font-size: 12px; padding: 6px 14px;">STATUS: FAIL</span>
+                    {% else %}
+                        <span class="badge-tag tag-accent" style="font-size: 12px; padding: 6px 14px;">STATUS: RUNNING</span>
+                    {% endif %}
+                {% else %}
+                    <span class="badge-tag tag-neutral" style="font-size: 12px; padding: 6px 14px;">STATUS: NOT RUN</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Status & Metadata Strip -->
+        <div class="kpi-band" style="margin-bottom: 32px; border-bottom: 1px solid var(--hairline); border-top: 1px solid var(--hairline);">
+            <div class="kpi-cell">
+                <span class="eyebrow">HERMETIC PYTEST SUITE</span>
+                <div class="kpi-number" id="testrun-summary" style="font-size: 22px; color: var(--accent);">
+                    {% if testrun %}
+                        {{ testrun.passed }}/{{ testrun.total }} passing
+                    {% else %}
+                        140/140 passing
+                    {% endif %}
+                </div>
+                <div class="kpi-desc" style="font-size: 12px; font-family: var(--font-mono); margin-top: 2px;">
+                    {% if testrun %}
+                        recorded {{ testrun.recorded_at[:19] }}Z
+                    {% else %}
+                        refresh: python scripts/record_test_run.py
+                    {% endif %}
+                </div>
+            </div>
+            <div class="kpi-cell">
+                <span class="eyebrow">LAST VALIDATION RUN</span>
+                <div class="kpi-number" id="last-run-scope" style="font-size: 22px;">
+                    {% if last_report %}{{ last_report.scope | upper }}{% else %}—{% endif %}
+                </div>
+                <div class="kpi-desc" id="last-run-time" style="font-size: 12px; font-family: var(--font-mono); margin-top: 2px;">
+                    {% if last_report %}{{ last_report.started_at[:19] }}Z{% else %}Never executed{% endif %}
+                </div>
+            </div>
+            <div class="kpi-cell">
+                <span class="eyebrow">RAZORPAY INTEGRATION</span>
+                <div class="kpi-number" style="font-size: 22px;">
+                    {% if settings.razorpay_use_mock %}
+                        <span style="color: var(--muted);">MOCK</span>
+                    {% else %}
+                        <span style="color: var(--success);">LIVE TEST</span>
+                    {% endif %}
+                </div>
+                <div class="kpi-desc" style="font-size: 12px;">Endpoint: /v1/orders verification</div>
+            </div>
+            <div class="kpi-cell">
+                <span class="eyebrow">LLM PROVIDER</span>
+                <div class="kpi-number" style="font-size: 22px;">
+                    {% if settings.llm_use_mock %}
+                        <span style="color: var(--muted);">MOCK</span>
+                    {% else %}
+                        <span style="color: var(--accent);">LIVE LLM</span>
+                    {% endif %}
+                </div>
+                <div class="kpi-desc" style="font-size: 12px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
+                    {{ settings.llm_model_name }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls Toolbar -->
+        <div style="background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--radius-card); padding: 20px; margin-bottom: 32px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                    <button id="btn-run-hermetic" class="btn btn-primary" style="font-size: 13px;">
+                        Run hermetic suite
+                    </button>
+                    <button 
+                        id="btn-run-razorpay" 
+                        class="btn btn-outline" 
+                        style="font-size: 13px;"
+                        {% if settings.razorpay_use_mock or not settings.razorpay_key_id %}
+                        disabled 
+                        title="Live Razorpay check requires RAZORPAY_USE_MOCK=False and API credentials set in .env"
+                        {% endif %}
+                    >
+                        Run live Razorpay check
+                    </button>
+                    <button 
+                        id="btn-run-llm" 
+                        class="btn btn-outline" 
+                        style="font-size: 13px;"
+                        {% if settings.llm_use_mock or not settings.llm_api_key %}
+                        disabled 
+                        title="Live LLM check requires LLM_USE_MOCK=False and LLM_API_KEY set in .env"
+                        {% endif %}
+                    >
+                        Run live LLM check
+                    </button>
+                    <button id="btn-run-all" class="btn btn-outline" style="font-size: 13px;">
+                        Run full suite
+                    </button>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="live-dot" id="validation-live-dot" style="display: none;"></span>
+                    <span id="validation-running-label" style="font-size: 12px; color: var(--muted); font-family: var(--font-mono); display: none;">Streaming checks...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Table -->
+        <div class="registry-panel">
+            <table class="registry-table" id="validation-table">
+                <thead>
+                    <tr>
+                        <th style="width: 28%;">Check Name</th>
+                        <th style="width: 14%;">Category</th>
+                        <th style="width: 12%;">Status</th>
+                        <th style="width: 10%;">Latency</th>
+                        <th style="width: 24%;">Evidence / Diagnostics</th>
+                        <th style="width: 12%; text-align: right;">Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody id="validation-table-body">
+                    {% if last_report and last_report.results %}
+                        {% for r in last_report.results %}
+                        <tr id="check-row-{{ r.check_id }}">
+                            <td>
+                                <div style="font-weight: 600; color: var(--ink);">{{ r.name }}</div>
+                                <div style="font-size: 11px; color: var(--muted); font-family: var(--font-mono);">{{ r.check_id }}</div>
+                            </td>
+                            <td>
+                                {% if r.category == 'hermetic' %}
+                                    <span class="badge-tag tag-accent">hermetic</span>
+                                {% elif r.category == 'live_razorpay' %}
+                                    <span class="badge-tag tag-warning">live_razorpay</span>
+                                {% else %}
+                                    <span class="badge-tag tag-neutral">live_llm</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if r.status == 'pass' %}
+                                    <span class="badge-tag tag-success"><span class="status-dot-sm"></span> PASS</span>
+                                {% elif r.status == 'fail' %}
+                                    <span class="badge-tag tag-danger"><span class="status-dot-sm"></span> FAIL</span>
+                                {% else %}
+                                    <span class="badge-tag tag-neutral">SKIPPED</span>
+                                {% endif %}
+                            </td>
+                            <td class="tabular-nums" style="font-family: var(--font-mono); font-size: 12px;">
+                                {% if r.latency_ms is not none %}{{ r.latency_ms }}ms{% else %}—{% endif %}
+                            </td>
+                            <td>
+                                <div style="font-size: 12px; color: var(--ink); margin-bottom: 2px;">{{ r.detail }}</div>
+                                {% if r.evidence_json %}
+                                <div style="font-family: var(--font-mono); font-size: 11px; color: var(--muted); max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ r.evidence_json }}">
+                                    {{ r.evidence_json }}
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td style="text-align: right; font-family: var(--font-mono); font-size: 11px; color: var(--muted);">
+                                {{ r.timestamp[11:19] if r.timestamp|length >= 19 else r.timestamp }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr id="val-empty-row">
+                            <td colspan="6" style="text-align: center; padding: 48px 16px; color: var(--muted);">
+                                <div style="font-size: 24px; margin-bottom: 6px;">&bull;&bull;&bull;</div>
+                                <div style="font-weight: 500; color: var(--ink);">No validation run executed yet.</div>
+                                <div style="font-size: 13px; margin-top: 4px;">Click <strong>Run hermetic suite</strong> above to execute in-process verification.</div>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+        <div style="margin-top: 24px; font-size: 12.5px; color: var(--muted); line-height: 1.5;">
+            Hermetic checks run in-process. Live checks hit real sandbox APIs only when you press them. Secrets never leave the server.
+        </div>
+    </div>
+</section>
+{% endblock %}

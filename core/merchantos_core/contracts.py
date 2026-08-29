@@ -454,6 +454,35 @@ class LedgerEntry(BaseModel):
     events: list[TradeEvent] = Field(default_factory=list)
 
 
+class ValidationCheckResult(BaseModel):
+    """Result of an individual validation check (hermetic or live)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    check_id: str = Field(min_length=1)
+    name: str = Field(min_length=1)
+    category: Literal["hermetic", "live_razorpay", "live_llm"]
+    status: Literal["pass", "fail", "skipped"]
+    latency_ms: int | None = Field(default=None, ge=0)
+    detail: str
+    evidence_json: str = Field(default="", description="serialized evidence; empty string if none")
+    timestamp: str = Field(min_length=1)
+
+
+class ValidationReport(BaseModel):
+    """Aggregated report of a complete validation run across checks."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    run_id: str = Field(min_length=1)
+    scope: Literal["hermetic", "live", "all"]
+    started_at: str = Field(min_length=1)
+    finished_at: str | None = None
+    overall_status: Literal["running", "pass", "fail"]
+    results: list[ValidationCheckResult] = Field(default_factory=list)
+
+
+
 
 
 

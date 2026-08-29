@@ -10,6 +10,8 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
+from merchantos_api.build_info import TESTS_PASSING
+from merchantos_api.charts import render_divergence_svg
 from merchantos_api.deps import get_trade_ledger
 from merchantos_core.ledger.trade_ledger import TradeLedger
 
@@ -18,6 +20,7 @@ router = APIRouter(tags=["dashboard"])
 # Setup Jinja2 templates
 TEMPLATES_DIR = Path(__file__).resolve().parent.parent / "templates"
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
+DATA_DIR = Path(__file__).resolve().parent.parent.parent.parent / "data"
 
 
 def format_inr(value: Any) -> str:
@@ -195,12 +198,75 @@ def _enrich_event_for_display(event: Any) -> dict[str, Any]:
 
 
 @router.get("/", response_class=HTMLResponse)
+async def overview_page(
+    request: Request,
+) -> HTMLResponse:
+    """Render the 60-Second Overview Showroom explaining MerchantOS AI architecture and proofs."""
+    # Load evaluation report data for dynamic chart generation
+    report_data: dict[str, Any] | None = None
+    dev_report_path = DATA_DIR / "evaluation_report_dev.json"
+    if dev_report_path.exists():
+        try:
+            with open(dev_report_path, "r", encoding="utf-8") as f:
+                report_data = json.load(f)
+        except Exception:
+            report_data = None
+
+    divergence_svg = render_divergence_svg(data_dict=report_data)
+
+    # Read latest validation report for proof strip
+    last_live_razorpay = "not run"
+    last_live_llm = "not run"
+    val_report_path = DATA_DIR / "validation_report.json"
+    if val_report_path.exists():
+        try:
+            with open(val_report_path, "r", encoding="utf-8") as f:
+                val_data = json.load(f)
+                for r in val_data.get("results", []):
+                    c_id = r.get("check_id")
+                    st = r.get("status")
+                    lat = r.get("latency_ms", 0)
+                    ev_str = r.get("evidence_json", "")
+                    if c_id == "live_razorpay":
+                        if st == "pass":
+                            ev = json.loads(ev_str) if ev_str else {}
+                            oid = ev.get("order_id", "order_xxx")
+                            last_live_razorpay = f"pass {oid} · {lat}ms"
+                        elif st == "skipped":
+                            last_live_razorpay = "skipped (mock)"
+                        elif st == "fail":
+                            last_live_razorpay = f"fail ({lat}ms)"
+                    elif c_id == "live_llm":
+                        if st == "pass":
+                            ev = json.loads(ev_str) if ev_str else {}
+                            model = ev.get("model", "llm")
+                            last_live_llm = f"pass {model} · {lat}ms"
+                        elif st == "skipped":
+                            last_live_llm = "skipped (mock)"
+                        elif st == "fail":
+                            last_live_llm = f"fail ({lat}ms)"
+        except Exception:
+            pass
+
+    return templates.TemplateResponse(
+        request=request,
+        name="overview.html",
+        context={
+            "divergence_svg": divergence_svg,
+            "tests_passing": TESTS_PASSING,
+            "last_live_razorpay": last_live_razorpay,
+            "last_live_llm": last_live_llm,
+            "active_nav": "overview",
+        },
+    )
+
+
 @router.get("/dashboard", response_class=HTMLResponse)
 async def dashboard_index(
     request: Request,
     trade_ledger: Annotated[TradeLedger, Depends(get_trade_ledger)],
 ) -> HTMLResponse:
-    """Render the Static Judge Dashboard index showing all recorded negotiation & checkout sessions."""
+    """Render the Live Trade Ledger Session Registry showing all recorded sessions."""
     sessions_raw = trade_ledger.get_all_sessions()
     sessions_data = []
 
@@ -242,6 +308,7 @@ async def dashboard_index(
             "total_converted": total_converted,
             "total_blocked": total_blocked,
             "total_failed_or_error": total_failed_or_error,
+            "active_nav": "dashboard",
         },
     )
 
@@ -265,5 +332,7 @@ async def dashboard_trace(
             "summary": summary,
             "events": enriched_events,
             "total_events": len(enriched_events),
+            "active_nav": "dashboard",
         },
     )
+

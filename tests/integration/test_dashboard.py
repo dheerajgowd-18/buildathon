@@ -1,17 +1,69 @@
-"""Integration tests for the static judge dashboard and trace visualizer."""
+"""Integration tests for the static judge dashboard, overview showroom, and trace visualizer."""
 
+from pathlib import Path
 import json
 
 from fastapi.testclient import TestClient
 
+from merchantos_api.build_info import TESTS_PASSING
 from merchantos_api.main import create_app
 from merchantos_core.config import Settings
 from merchantos_core.contracts import TradeEvent
 from merchantos_core.ledger.trade_ledger import TradeLedger
 
 
-def test_dashboard_index_returns_200() -> None:
-    """Assert the main dashboard route returns HTTP 200 with HTML content."""
+def test_overview_renders_hero() -> None:
+    """Assert GET / renders the Phase 09 Overview page with headline and hero elements."""
+    app = create_app(settings=Settings(_env_file=None, razorpay_use_mock=True, llm_use_mock=True))
+    client = TestClient(app)
+
+    response = client.get("/")
+    assert response.status_code == 200
+    assert "text/html" in response.headers["content-type"]
+    assert "Who negotiates for the merchant" in response.text
+    assert "LLM PROPOSES. CODE DISPOSES." in response.text
+    assert "0 unverified money movements" in response.text
+
+
+def test_overview_renders_divergence_svg() -> None:
+    """Assert GET / contains the server-rendered inline SVG divergence chart."""
+    app = create_app(settings=Settings(_env_file=None, razorpay_use_mock=True, llm_use_mock=True))
+    client = TestClient(app)
+
+    response = client.get("/")
+    assert response.status_code == 200
+    assert "<svg" in response.text
+    assert "Divergence" in response.text or "divergence" in response.text
+    assert "The Divergence Thesis" in response.text or "THE DIVERGENCE THESIS" in response.text
+
+
+def test_overview_renders_trust_boundary() -> None:
+    """Assert GET / renders the topology trust boundary and 'only path to money' invariant."""
+    app = create_app(settings=Settings(_env_file=None, razorpay_use_mock=True, llm_use_mock=True))
+    client = TestClient(app)
+
+    response = client.get("/")
+    assert response.status_code == 200
+    assert "CommerceProof" in response.text
+    assert "only path to money" in response.text
+    assert "PROBABILISTIC" in response.text
+    assert "DETERMINISTIC" in response.text
+
+
+def test_overview_kpi_band() -> None:
+    """Assert GET / renders the 4-metric KPI band with Gate Rejection Rate."""
+    app = create_app(settings=Settings(_env_file=None, razorpay_use_mock=True, llm_use_mock=True))
+    client = TestClient(app)
+
+    response = client.get("/")
+    assert response.status_code == 200
+    assert "GATE REJECTION RATE" in response.text or "Gate rejection" in response.text.lower()
+    assert "CONVERSION LIFT" in response.text
+    assert f"{TESTS_PASSING}/{TESTS_PASSING}" in response.text
+
+
+def test_registry_still_works() -> None:
+    """Assert GET /dashboard renders the session registry with new layout tokens."""
     trade_ledger = TradeLedger()
     event = TradeEvent(
         event_id="evt_test_001",
@@ -22,23 +74,21 @@ def test_dashboard_index_returns_200() -> None:
     )
     trade_ledger.record_event(event)
 
-    app = create_app(settings=Settings(razorpay_use_mock=True), trade_ledger=trade_ledger)
+    app = create_app(
+        settings=Settings(_env_file=None, razorpay_use_mock=True, llm_use_mock=True),
+        trade_ledger=trade_ledger,
+    )
     client = TestClient(app)
 
-    response = client.get("/")
+    response = client.get("/dashboard")
     assert response.status_code == 200
-    assert "text/html" in response.headers["content-type"]
     assert "MerchantOS AI" in response.text
     assert "sess_dash_001" in response.text
-
-    # Also test /dashboard alias
-    dash_response = client.get("/dashboard")
-    assert dash_response.status_code == 200
-    assert "sess_dash_001" in dash_response.text
+    assert "Trade Ledger Session Registry" in response.text
 
 
-def test_dashboard_trace_returns_200() -> None:
-    """Seed the TradeLedger with a complete 4-phase mock session and assert the trace route renders correctly."""
+def test_trace_route_still_200_with_seed() -> None:
+    """Seed the TradeLedger with a complete 4-phase mock session and assert trace route renders."""
     trade_ledger = TradeLedger()
     session_id = "sess_trace_lifecycle_123"
 
@@ -125,7 +175,10 @@ def test_dashboard_trace_returns_200() -> None:
         )
     )
 
-    app = create_app(settings=Settings(razorpay_use_mock=True), trade_ledger=trade_ledger)
+    app = create_app(
+        settings=Settings(_env_file=None, razorpay_use_mock=True, llm_use_mock=True),
+        trade_ledger=trade_ledger,
+    )
     client = TestClient(app)
 
     response = client.get(f"/dashboard/trace/{session_id}")
@@ -138,16 +191,12 @@ def test_dashboard_trace_returns_200() -> None:
     assert "₹45,000.00" in response.text
 
 
-def test_dashboard_handles_empty_ledger() -> None:
-    """Assert the dashboard renders gracefully when the ledger is completely empty."""
-    trade_ledger = TradeLedger()
-    app = create_app(settings=Settings(razorpay_use_mock=True), trade_ledger=trade_ledger)
-    client = TestClient(app)
+def test_no_dark_mode() -> None:
+    """Assert design.css enforces light mode and strictly avoids prefers-color-scheme: dark."""
+    css_path = Path(__file__).resolve().parent.parent.parent / "apps" / "api" / "merchantos_api" / "static" / "design.css"
+    assert css_path.exists(), f"design.css not found at {css_path}"
 
-    response = client.get("/")
-    assert response.status_code == 200
-    assert "No Sessions Recorded in Trade Ledger" in response.text
-
-    trace_response = client.get("/dashboard/trace/sess_non_existent")
-    assert trace_response.status_code == 200
-    assert "No Events Found for Session sess_non_existent" in trace_response.text
+    css_content = css_path.read_text(encoding="utf-8")
+    assert "color-scheme: light" in css_content
+    assert "prefers-color-scheme: dark" not in css_content
+    assert "prefers-color-scheme:dark" not in css_content

@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Interactive Demo Console — MerchantOS AI{% endblock %}
+
+{% block content %}
+<section class="section fade-up-element" style="padding-top: 48px;">
+    <div class="container">
+        <div style="margin-bottom: 32px;">
+            <span class="eyebrow">BROWSER SANDBOX &amp; ADVERSARIAL RUNNER</span>
+            <h1 style="font-size: 28px; font-weight: 650; letter-spacing: -0.02em;">Interactive Demo Console</h1>
+            <p style="color: var(--muted); font-size: 14px; margin-top: 4px; max-width: 720px;">
+                Trigger autonomous negotiation, live LLM reasoning, prompt injection attacks, and cart mutation defenses. Watch the system think, gate, execute, and settle in real time.
+            </p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 5fr 7fr; gap: 32px; align-items: start;">
+            <!-- Left Column: Controls -->
+            <div style="background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--radius-card); padding: 24px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <label for="demo-utterance" class="eyebrow" style="margin-bottom: 0;">Buyer Utterance (Natural Language)</label>
+                    <span id="char-counter" style="font-family: var(--font-mono); font-size: 11px; color: var(--muted);">86/500</span>
+                </div>
+                <textarea 
+                    id="demo-utterance" 
+                    rows="3" 
+                    maxlength="500" 
+                    style="width: 100%; padding: 12px 14px; border: 1px solid var(--hairline); border-radius: var(--radius-sm); font-family: var(--font-sans); font-size: 14px; color: var(--ink); background: var(--paper); resize: vertical; margin-bottom: 20px; outline: none; transition: border-color 0.15s ease;"
+                >Looking for a high-performance workstation laptop under ₹60,000, need it fast.</textarea>
+
+                <!-- Row 1: Primary Autonomous Negotiation -->
+                <div style="margin-bottom: 16px;">
+                    <span class="eyebrow" style="font-size: 10px;">Autonomous Commerce Proposals</span>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <button id="btn-negotiate-mock" class="btn btn-primary" style="justify-content: center; font-size: 13px;">
+                            Negotiate &mdash; Mock LLM
+                        </button>
+                        <button 
+                            id="btn-negotiate-live" 
+                            class="btn btn-outline" 
+                            style="justify-content: center; font-size: 13px;"
+                            {% if settings.llm_use_mock or not settings.llm_api_key %}
+                            disabled 
+                            title="Live LLM requires LLM_USE_MOCK=False and LLM_API_KEY set in .env"
+                            {% endif %}
+                        >
+                            Negotiate &mdash; Live LLM
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Row 2: Adversarial Attack Scenarios -->
+                <div style="margin-bottom: 16px;">
+                    <span class="eyebrow" style="font-size: 10px;">Adversarial Security Suites</span>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <button id="btn-attack-injection" class="btn btn-outline" style="justify-content: center; font-size: 13px; border-color: rgba(185, 28, 28, 0.3); color: var(--danger);">
+                            Attack: Prompt Injection
+                        </button>
+                        <button id="btn-attack-mutation" class="btn btn-outline" style="justify-content: center; font-size: 13px; border-color: rgba(185, 28, 28, 0.3); color: var(--danger);">
+                            Attack: Cart Mutation
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Row 3: Live Gateway Order -->
+                <div>
+                    <span class="eyebrow" style="font-size: 10px;">Live Payment Gateway Execution</span>
+                    <button 
+                        id="btn-live-order" 
+                        class="btn btn-outline" 
+                        style="width: 100%; justify-content: center; font-size: 13px;"
+                        {% if settings.razorpay_use_mock %}
+                        disabled 
+                        title="Live Razorpay requires RAZORPAY_USE_MOCK=False and credentials set in .env"
+                        {% endif %}
+                    >
+                        Live Razorpay Order
+                    </button>
+                </div>
+
+                <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--hairline); font-size: 12px; color: var(--muted); line-height: 1.5;">
+                    <div><strong>Catalog:</strong> 3 Hardware SKUs &middot; <strong>Policy:</strong> Margin Floor 15%, Discount Cap 20%</div>
+                    <div style="margin-top: 4px;">Every trade is checked against <strong>CommerceProof</strong> before order creation.</div>
+                </div>
+            </div>
+
+            <!-- Right Column: Live Console Feed -->
+            <div style="background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--radius-card); padding: 24px; display: flex; flex-direction: column; min-height: 440px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="live-dot" id="console-live-dot"></span>
+                        <span class="eyebrow" style="margin-bottom: 0;">REAL-TIME EXECUTION LOG</span>
+                    </div>
+                    <div>
+                        <a id="open-trace-btn" href="#" target="_blank" class="btn btn-outline" style="padding: 4px 10px; font-size: 12px; display: none;">
+                            Open full trace &rarr;
+                        </a>
+                    </div>
+                </div>
+
+                <div 
+                    id="demo-log-terminal" 
+                    style="flex: 1; background: #FAFAF8; border: 1px solid var(--hairline); border-radius: var(--radius-sm); padding: 16px; font-family: var(--font-mono); font-size: 12.5px; line-height: 1.6; color: var(--ink); overflow-y: auto; max-height: 380px;"
+                >
+                    <div style="color: var(--muted); font-style: italic;">
+                        [Ready] Select a scenario or enter an utterance and click Negotiate. Real-time events will stream here over SSE.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

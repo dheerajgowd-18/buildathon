@@ -116,3 +116,25 @@ class OpenAICompatibleLLMProvider(AbstractLLMProvider):
             return LLMOutput.model_validate(parsed_dict)
         except ValidationError as err:
             raise LLMParsingError(f"LLM JSON output does not match LLMOutput schema: {err}") from err
+
+    def ping(self) -> str:
+        """Lightweight connectivity ping sending a minimal prompt to verify API credentials and reachability.
+
+        Returns:
+            The raw text reply from the LLM provider.
+        """
+        try:
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {"role": "user", "content": "Reply with the single word: READY"},
+                ],
+                max_tokens=8,
+                temperature=0.0,
+            )
+            if not response.choices or not response.choices[0].message:
+                raise LLMProviderError("No response message returned from ping completion.")
+            return str(response.choices[0].message.content or "").strip()
+        except Exception as err:
+            raise LLMProviderError(f"LLM ping failed: {err}") from err
+

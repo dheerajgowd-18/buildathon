@@ -1,0 +1,89 @@
+{
+  "run_id": "val_run_bce441d7",
+  "scope": "all",
+  "started_at": "2026-08-29T13:46:54.645740+00:00",
+  "finished_at": "2026-08-29T13:46:54.658943+00:00",
+  "overall_status": "pass",
+  "results": [
+    {
+      "check_id": "hmac_webhook_roundtrip",
+      "name": "HMAC Webhook Cryptographic Verification",
+      "category": "hermetic",
+      "status": "pass",
+      "latency_ms": 0,
+      "detail": "HMAC-SHA256 signature generated and verified; tampered payload successfully rejected.",
+      "evidence_json": "{\"algorithm\": \"HMAC-SHA256\", \"signature_length\": 64}",
+      "timestamp": "2026-08-29T13:46:54.646740+00:00"
+    },
+    {
+      "check_id": "canonical_hash_determinism",
+      "name": "Canonical Checkout State Hash Determinism",
+      "category": "hermetic",
+      "status": "pass",
+      "latency_ms": 0,
+      "detail": "Deterministic SHA-256 canonical hashing verified; 1-paise modification produces hash divergence.",
+      "evidence_json": "{\"canonical_hash\": \"51b6db021b4ba1bd...\", \"modified_hash\": \"b1151fbdc8972ad8...\"}",
+      "timestamp": "2026-08-29T13:46:54.646740+00:00"
+    },
+    {
+      "check_id": "commerceproof_clamp",
+      "name": "CommerceProof Invariant Enforcement & Clamping",
+      "category": "hermetic",
+      "status": "pass",
+      "latency_ms": 0,
+      "detail": "Excessive discount proposal intercepted and clamped to policy discount cap and margin floor.",
+      "evidence_json": "{\"original_price_minor\": 2600000, \"repaired_price_minor\": 4485000, \"repairs\": [\"Clamped proposed price from 2600000 to margin floor 4485000 (discount adjusted to 715000)\"]}",
+      "timestamp": "2026-08-29T13:46:54.646740+00:00"
+    },
+    {
+      "check_id": "ground_truth_leakage_scan",
+      "name": "Zero Ground-Truth Leakage CI Scan",
+      "category": "hermetic",
+      "status": "pass",
+      "latency_ms": 7,
+      "detail": "Scanned 150 benchmark scenarios; 0 internal evaluation keys or raw minor values leaked.",
+      "evidence_json": "{\"scenarios_scanned\": 150, \"leaks_found\": 0}",
+      "timestamp": "2026-08-29T13:46:54.654732+00:00"
+    },
+    {
+      "check_id": "negotiation_determinism",
+      "name": "Rules Baseline Negotiation Determinism",
+      "category": "hermetic",
+      "status": "pass",
+      "latency_ms": 3,
+      "detail": "Baseline agent generated bit-identical offer proposals on repeat evaluation.",
+      "evidence_json": "{\"selected_sku\": \"SKU-01\", \"proposed_price\": 5000000}",
+      "timestamp": "2026-08-29T13:46:54.658943+00:00"
+    },
+    {
+      "check_id": "ledger_subscription_roundtrip",
+      "name": "TradeLedger Real-Time Event Subscription",
+      "category": "hermetic",
+      "status": "pass",
+      "latency_ms": 0,
+      "detail": "Subscriber queue successfully received live event packet; cleanly unsubscribed.",
+      "evidence_json": "{\"dispatched_event_id\": \"evt_val_sub_51695a\", \"queue_latency_ms\": 0}",
+      "timestamp": "2026-08-29T13:46:54.658943+00:00"
+    },
+    {
+      "check_id": "live_razorpay",
+      "name": "Razorpay Test-Mode Gateway Connectivity",
+      "category": "live_razorpay",
+      "status": "skipped",
+      "latency_ms": 0,
+      "detail": "Skipped: RAZORPAY_USE_MOCK=True or Razorpay API credentials not configured in .env.",
+      "evidence_json": "",
+      "timestamp": "2026-08-29T13:46:54.658943+00:00"
+    },
+    {
+      "check_id": "live_llm",
+      "name": "OpenAI-Compatible LLM Provider Connectivity",
+      "category": "live_llm",
+      "status": "skipped",
+      "latency_ms": 0,
+      "detail": "Skipped: LLM_USE_MOCK=True or LLM_API_KEY not configured in .env.",
+      "evidence_json": "",
+      "timestamp": "2026-08-29T13:46:54.658943+00:00"
+    }
+  ]
+}

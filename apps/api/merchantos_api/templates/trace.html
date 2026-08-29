@@ -1,365 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Session Trace: {{ session_id }} — MerchantOS AI</title>
-    <style>
-        :root {
-            --bg-primary: #0f172a;
-            --bg-secondary: #1e293b;
-            --bg-card: #1e293b;
-            --bg-card-hover: #334155;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
-            --border: #334155;
-            --accent: #38bdf8;
-            --accent-glow: rgba(56, 189, 248, 0.15);
-            --success: #10b981;
-            --success-bg: rgba(16, 185, 129, 0.15);
-            --warning: #f59e0b;
-            --warning-bg: rgba(245, 158, 11, 0.15);
-            --danger: #ef4444;
-            --danger-bg: rgba(239, 68, 68, 0.15);
-            --info: #6366f1;
-            --info-bg: rgba(99, 102, 241, 0.15);
-            --purple: #a855f7;
-            --purple-bg: rgba(168, 85, 247, 0.15);
-        }
+{% extends "base.html" %}
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+{% block title %}Session Trace {{ session_id }} — MerchantOS AI{% endblock %}
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-            line-height: 1.5;
-            padding: 2rem;
-        }
-
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-
-        .nav-back {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--accent);
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-        }
-
-        .nav-back:hover {
-            text-decoration: underline;
-        }
-
-        header {
-            margin-bottom: 2rem;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .session-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            word-break: break-all;
-        }
-
-        .session-id-tag {
-            font-family: monospace;
-            color: var(--accent);
-        }
-
-        .summary-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 1.25rem 1.5rem;
-            margin-bottom: 2rem;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 1.25rem;
-        }
-
-        .summary-item {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .summary-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-muted);
-            margin-bottom: 0.25rem;
-        }
-
-        .summary-val {
-            font-size: 1.1rem;
-            font-weight: 700;
-        }
-
-        .timeline {
-            position: relative;
-            padding-left: 2rem;
-            border-left: 2px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            margin-bottom: 3rem;
-        }
-
-        .event-card {
-            position: relative;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 1.25rem 1.5rem;
-            transition: border-color 0.15s ease;
-        }
-
-        .event-card::before {
-            content: '';
-            position: absolute;
-            left: calc(-2rem - 6px);
-            top: 1.5rem;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: var(--border);
-            border: 2px solid var(--bg-primary);
-        }
-
-        /* 4 Distinct Lifecycle Phases */
-        .card-phase-negotiation {
-            border-left: 4px solid var(--accent);
-        }
-        .card-phase-negotiation::before {
-            background: var(--accent);
-            box-shadow: 0 0 8px var(--accent);
-        }
-
-        .card-phase-gate {
-            border-left: 4px solid var(--warning);
-        }
-        .card-phase-gate.gate-execute {
-            border-left-color: var(--success);
-        }
-        .card-phase-gate.gate-execute::before {
-            background: var(--success);
-            box-shadow: 0 0 8px var(--success);
-        }
-        .card-phase-gate.gate-repair {
-            border-left-color: var(--warning);
-        }
-        .card-phase-gate.gate-repair::before {
-            background: var(--warning);
-            box-shadow: 0 0 8px var(--warning);
-        }
-        .card-phase-gate.gate-block {
-            border-left-color: var(--danger);
-        }
-        .card-phase-gate.gate-block::before {
-            background: var(--danger);
-            box-shadow: 0 0 8px var(--danger);
-        }
-
-        .card-phase-execution {
-            border-left: 4px solid var(--purple);
-        }
-        .card-phase-execution::before {
-            background: var(--purple);
-            box-shadow: 0 0 8px var(--purple);
-        }
-
-        .card-phase-settlement {
-            border-left: 4px solid var(--info);
-        }
-        .card-phase-settlement::before {
-            background: var(--info);
-            box-shadow: 0 0 8px var(--info);
-        }
-
-        .event-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .event-type-badge {
-            font-family: monospace;
-            font-size: 0.85rem;
-            font-weight: 700;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-        }
-
-        .phase-indicator {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            font-weight: 600;
-            color: var(--text-secondary);
-        }
-
-        .event-meta {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            font-family: monospace;
-        }
-
-        .event-content {
-            margin-top: 0.5rem;
-            font-size: 0.9rem;
-            color: var(--text-primary);
-        }
-
-        .payload-highlights {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 0.75rem;
-            margin: 0.75rem 0;
-            background: rgba(15, 23, 42, 0.5);
-            padding: 0.75rem 1rem;
-            border-radius: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .highlight-item {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .highlight-label {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .highlight-val {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 0.2rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-        .badge-success { background: var(--success-bg); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
-        .badge-warning { background: var(--warning-bg); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
-        .badge-danger { background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
-        .badge-info { background: var(--info-bg); color: var(--info); border: 1px solid rgba(99, 102, 241, 0.3); }
-
-        details {
-            margin-top: 1rem;
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            overflow: hidden;
-        }
-
-        summary {
-            padding: 0.5rem 0.75rem;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-            cursor: pointer;
-            user-select: none;
-            background: rgba(30, 41, 59, 0.5);
-            transition: background 0.15s ease;
-        }
-
-        summary:hover {
-            background: var(--bg-card-hover);
-            color: var(--text-primary);
-        }
-
-        pre {
-            padding: 0.75rem 1rem;
-            font-family: monospace;
-            font-size: 0.8rem;
-            color: #38bdf8;
-            overflow-x: auto;
-            white-space: pre-wrap;
-            word-break: break-all;
-            background: #090d16;
-        }
-
-        .empty-trace {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 3rem;
-            text-align: center;
-            color: var(--text-muted);
-        }
-
-        footer {
-            margin-top: 2.5rem;
-            padding-top: 1rem;
-            border-top: 1px solid var(--border);
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.8rem;
-        }
-    </style>
-</head>
-<body>
+{% block content %}
+<section class="section fade-up-element" id="trace-view" data-session-id="{{ session_id }}" style="padding-top: 36px;">
     <div class="container">
-        <a href="/dashboard" class="nav-back">&larr; Back to Session Registry</a>
+        <a href="/dashboard" class="btn btn-outline" style="padding: 6px 12px; font-size: 13px; margin-bottom: 24px;">
+            &larr; Back to Session Registry
+        </a>
 
-        <header>
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 28px; flex-wrap: wrap; gap: 16px;">
             <div>
-                <div class="session-title">
-                    Session: <span class="session-id-tag">{{ session_id }}</span>
-                </div>
-                <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.25rem;">
-                    Chronological Lifecycle Audit Trace (Immutable TradeLedger)
-                </div>
+                <span class="eyebrow">CHRONOLOGICAL AUDIT TRACE</span>
+                <h1 style="font-size: 24px; font-weight: 650; font-family: var(--font-mono); letter-spacing: -0.01em;">{{ session_id }}</h1>
+                <p style="color: var(--muted); font-size: 13px; margin-top: 4px;">60-Second Immutable Trade Lifecycle Audit Trail</p>
             </div>
-            <div>
-                <span class="badge {{ summary.status_badge }}" style="font-size: 0.85rem; padding: 0.35rem 0.75rem;">
-                    {{ summary.status_label }}
-                </span>
+            <div id="trace-header-badge">
+                {% if 'Converted' in summary.status_label %}
+                    <span class="badge-tag tag-success" style="font-size: 12px; padding: 6px 12px;">{{ summary.status_label }}</span>
+                {% elif 'Blocked' in summary.status_label or 'Security' in summary.status_label %}
+                    <span class="badge-tag tag-danger" style="font-size: 12px; padding: 6px 12px;">{{ summary.status_label }}</span>
+                {% elif 'Repaired' in summary.status_label or 'Failed' in summary.status_label %}
+                    <span class="badge-tag tag-warning" style="font-size: 12px; padding: 6px 12px;">{{ summary.status_label }}</span>
+                {% else %}
+                    <span class="badge-tag tag-accent" style="font-size: 12px; padding: 6px 12px;">{{ summary.status_label }}</span>
+                {% endif %}
             </div>
-        </header>
+        </div>
 
-        <div class="summary-card">
-            <div class="summary-item">
-                <span class="summary-label">Total Lifecycle Events</span>
-                <span class="summary-val">{{ total_events }}</span>
+        <!-- Summary Grid -->
+        <div class="trace-summary-grid">
+            <div class="trace-summary-cell">
+                <span class="eyebrow">TOTAL EVENTS</span>
+                <div class="kpi-number" id="trace-total-events" style="font-size: 22px;">{{ total_events }}</div>
             </div>
-            <div class="summary-item">
-                <span class="summary-label">Gate Disposition</span>
-                <span class="summary-val">
+            <div class="trace-summary-cell">
+                <span class="eyebrow">GATE DISPOSITION</span>
+                <div class="kpi-number" id="trace-gate-action" style="font-size: 22px;">
                     {% if summary.gate_action == 'EXECUTE' %}
                         <span style="color: var(--success);">EXECUTE</span>
                     {% elif summary.gate_action == 'REPAIR' %}
@@ -369,203 +46,138 @@
                     {% else %}
                         {{ summary.gate_action }}
                     {% endif %}
-                </span>
+                </div>
             </div>
-            <div class="summary-item">
-                <span class="summary-label">Approved / Captured Amount</span>
-                <span class="summary-val" style="font-family: monospace;">{{ summary.final_amount_minor | format_inr }}</span>
+            <div class="trace-summary-cell">
+                <span class="eyebrow">SETTLED AMOUNT</span>
+                <div class="kpi-number" id="trace-settled-amount" style="font-size: 22px; font-family: var(--font-mono);">
+                    {{ summary.final_amount_minor | format_inr }}
+                </div>
             </div>
-            <div class="summary-item">
-                <span class="summary-label">Last Timestamp</span>
-                <span class="summary-val" style="font-size: 0.85rem; font-family: monospace;">{{ summary.last_timestamp }}</span>
+            <div class="trace-summary-cell">
+                <span class="eyebrow">LAST TIMESTAMP</span>
+                <div id="trace-last-timestamp" style="font-family: var(--font-mono); font-size: 13px; color: var(--ink); margin-top: 6px;">
+                    {{ summary.last_timestamp }}
+                </div>
             </div>
         </div>
 
+        <!-- Timeline of Events -->
         {% if events %}
-        <div class="timeline">
+        <div class="trace-timeline" id="trace-timeline">
             {% for evt in events %}
-            <div class="event-card {{ evt.phase_class }} {{ evt.gate_highlight }}">
-                <div class="event-header">
-                    <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                        <span class="phase-indicator">{{ evt.phase_name }}</span>
-                        <span class="event-type-badge">{{ evt.event_type }}</span>
+            <div class="trace-card {{ evt.phase_class }} {{ evt.gate_highlight }}">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="eyebrow" style="margin-bottom: 0; color: var(--ink);">{{ evt.phase_name }}</span>
+                        <span class="badge-tag tag-neutral" style="font-family: var(--font-mono);">{{ evt.event_type }}</span>
                         {% if evt.event_type == 'gate_decision' %}
                             {% if evt.parsed_payload.get('action') == 'EXECUTE' %}
-                                <span class="badge badge-success">EXECUTE</span>
+                                <span class="badge-tag tag-success">EXECUTE</span>
                             {% elif evt.parsed_payload.get('action') == 'REPAIR' %}
-                                <span class="badge badge-warning">REPAIR</span>
+                                <span class="badge-tag tag-warning">REPAIR</span>
                             {% elif evt.parsed_payload.get('action') == 'BLOCK' %}
-                                <span class="badge badge-danger">BLOCK</span>
+                                <span class="badge-tag tag-danger">BLOCK</span>
                             {% endif %}
                         {% elif evt.event_type == 'payment_captured' %}
-                            <span class="badge badge-success">PAID</span>
+                            <span class="badge-tag tag-success">PAID</span>
                         {% elif evt.event_type == 'payment_failed' %}
-                            <span class="badge badge-warning">DECLINED</span>
+                            <span class="badge-tag tag-warning">DECLINED</span>
                         {% elif evt.event_type == 'error' %}
-                            <span class="badge badge-danger">SECURITY ALERT</span>
+                            <span class="badge-tag tag-danger">SECURITY ALERT</span>
                         {% endif %}
                     </div>
-                    <div class="event-meta">
-                        Event ID: {{ evt.event_id }} &bull; {{ evt.timestamp }}
+                    <div style="font-size: 11px; color: var(--muted); font-family: var(--font-mono);">
+                        {{ evt.event_id }} &middot; {{ evt.timestamp }}
                     </div>
                 </div>
 
-                <div class="event-content">
-                    <!-- Specific Highlight Views per Event Type -->
-                    {% if evt.event_type == 'intent_received' %}
-                        <div class="payload-highlights">
-                            <div class="highlight-item" style="grid-column: 1 / -1;">
-                                <span class="highlight-label">Buyer Utterance</span>
-                                <span class="highlight-val" style="font-weight: 500; font-style: italic;">
-                                    "{{ evt.parsed_payload.get('nl_utterance', '—') }}"
-                                </span>
-                            </div>
-                            <div class="highlight-item">
-                                <span class="highlight-label">Catalog Items</span>
-                                <span class="highlight-val">{{ evt.parsed_payload.get('catalog_count', '—') }} products</span>
-                            </div>
+                <!-- Parsed Highlight Views -->
+                {% if evt.event_type == 'intent_received' %}
+                    <div style="background: #FAFAF8; border: 1px solid var(--hairline); border-radius: 6px; padding: 12px 16px; margin: 8px 0;">
+                        <div style="font-size: 11px; text-transform: uppercase; color: var(--muted); font-weight: 600; margin-bottom: 4px;">Buyer Utterance</div>
+                        <div style="font-size: 14px; font-style: italic; color: var(--ink);">
+                            "{{ evt.parsed_payload.get('nl_utterance', '—') }}"
                         </div>
-
-                    {% elif evt.event_type == 'offer_proposed' %}
-                        <div class="payload-highlights">
-                            <div class="highlight-item">
-                                <span class="highlight-label">Proposed SKU</span>
-                                <span class="highlight-val" style="font-family: monospace;">{{ evt.parsed_payload.get('sku_id', evt.parsed_payload.get('selected_sku_id', '—')) }}</span>
-                            </div>
-                            <div class="highlight-item">
-                                <span class="highlight-label">Proposed Price</span>
-                                <span class="highlight-val" style="color: var(--accent);">{{ evt.parsed_payload.get('proposed_price_minor') | format_inr }}</span>
-                            </div>
-                            <div class="highlight-item">
-                                <span class="highlight-label">Discount Offered</span>
-                                <span class="highlight-val">{{ evt.parsed_payload.get('discount_minor') | format_inr }}</span>
-                            </div>
-                            <div class="highlight-item">
-                                <span class="highlight-label">Shipping Tier</span>
-                                <span class="highlight-val" style="text-transform: uppercase;">{{ evt.parsed_payload.get('shipping_tier', 'standard') }}</span>
-                            </div>
+                    </div>
+                {% elif evt.event_type == 'offer_proposed' %}
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; background: #FAFAF8; border: 1px solid var(--hairline); border-radius: 6px; padding: 12px 16px; margin: 8px 0;">
+                        <div>
+                            <div style="font-size: 11px; text-transform: uppercase; color: var(--muted); font-weight: 600;">Proposed SKU</div>
+                            <div style="font-family: var(--font-mono); font-size: 13px; font-weight: 600;">{{ evt.parsed_payload.get('sku_id', evt.parsed_payload.get('selected_sku_id', '—')) }}</div>
                         </div>
-
-                    {% elif evt.event_type == 'gate_decision' %}
-                        <div class="payload-highlights" style="border-left: 3px solid {% if evt.parsed_payload.get('action') == 'EXECUTE' %}var(--success){% elif evt.parsed_payload.get('action') == 'REPAIR' %}var(--warning){% else %}var(--danger){% endif %};">
-                            <div class="highlight-item">
-                                <span class="highlight-label">CommerceProof Action</span>
-                                <span class="highlight-val">
-                                    {% if evt.parsed_payload.get('action') == 'EXECUTE' %}
-                                        <span style="color: var(--success);">EXECUTE (Passes All Invariants)</span>
-                                    {% elif evt.parsed_payload.get('action') == 'REPAIR' %}
-                                        <span style="color: var(--warning);">REPAIR (Clamped to Margin Floor / Cap)</span>
-                                    {% else %}
-                                        <span style="color: var(--danger);">BLOCK (Fatal Violation)</span>
-                                    {% endif %}
-                                </span>
-                            </div>
-                            <div class="highlight-item">
-                                <span class="highlight-label">Cryptographic State Hash</span>
-                                <span class="highlight-val" style="font-family: monospace; font-size: 0.8rem; color: var(--accent);">
-                                    {{ evt.parsed_payload.get('final_state_hash', 'None') }}
-                                </span>
-                            </div>
-                            {% if evt.parsed_payload.get('repairs') %}
-                            <div class="highlight-item" style="grid-column: 1 / -1;">
-                                <span class="highlight-label" style="color: var(--warning);">Applied Repairs</span>
-                                <span class="highlight-val" style="color: var(--warning); font-size: 0.85rem;">
-                                    {{ evt.parsed_payload.get('repairs') | join(', ') }}
-                                </span>
-                            </div>
-                            {% endif %}
-                            {% if evt.parsed_payload.get('violations') %}
-                            <div class="highlight-item" style="grid-column: 1 / -1;">
-                                <span class="highlight-label" style="color: var(--danger);">Violations Detected</span>
-                                <span class="highlight-val" style="color: var(--danger); font-size: 0.85rem;">
-                                    {{ evt.parsed_payload.get('violations') | join(', ') }}
-                                </span>
-                            </div>
-                            {% endif %}
+                        <div>
+                            <div style="font-size: 11px; text-transform: uppercase; color: var(--muted); font-weight: 600;">Proposed Price</div>
+                            <div style="font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--accent);">{{ evt.parsed_payload.get('proposed_price_minor') | format_inr }}</div>
                         </div>
-
-                    {% elif evt.event_type == 'order_created' %}
-                        <div class="payload-highlights">
-                            <div class="highlight-item">
-                                <span class="highlight-label">Razorpay Order ID</span>
-                                <span class="highlight-val" style="font-family: monospace; color: var(--purple);">{{ evt.parsed_payload.get('order_id', evt.parsed_payload.get('id', '—')) }}</span>
-                            </div>
-                            <div class="highlight-item">
-                                <span class="highlight-label">Order Amount</span>
-                                <span class="highlight-val" style="color: var(--success);">{{ (evt.parsed_payload.get('amount') or evt.parsed_payload.get('amount_minor')) | format_inr }}</span>
-                            </div>
-                            <div class="highlight-item">
-                                <span class="highlight-label">Currency</span>
-                                <span class="highlight-val">{{ evt.parsed_payload.get('currency', 'INR') }}</span>
-                            </div>
+                        <div>
+                            <div style="font-size: 11px; text-transform: uppercase; color: var(--muted); font-weight: 600;">Discount</div>
+                            <div style="font-family: var(--font-mono); font-size: 13px;">{{ evt.parsed_payload.get('discount_minor') | format_inr }}</div>
                         </div>
-
-                    {% elif evt.event_type == 'payment_captured' %}
-                        <div class="payload-highlights" style="border-left: 3px solid var(--success);">
-                            <div class="highlight-item">
-                                <span class="highlight-label">Payment ID</span>
-                                <span class="highlight-val" style="font-family: monospace; color: var(--success);">{{ evt.parsed_payload.get('payment_id', '—') }}</span>
-                            </div>
-                            <div class="highlight-item">
-                                <span class="highlight-label">Captured Amount</span>
-                                <span class="highlight-val" style="color: var(--success);">{{ evt.parsed_payload.get('amount_minor') | format_inr }}</span>
-                            </div>
-                            <div class="highlight-item">
-                                <span class="highlight-label">HMAC Status</span>
-                                <span class="highlight-val" style="color: var(--success);">Verified (SHA-256)</span>
-                            </div>
+                        <div>
+                            <div style="font-size: 11px; text-transform: uppercase; color: var(--muted); font-weight: 600;">Shipping</div>
+                            <div style="font-size: 13px; text-transform: uppercase; font-weight: 600;">{{ evt.parsed_payload.get('shipping_tier', 'standard') }}</div>
                         </div>
-
-                    {% elif evt.event_type == 'payment_failed' %}
-                        <div class="payload-highlights" style="border-left: 3px solid var(--warning);">
-                            <div class="highlight-item">
-                                <span class="highlight-label">Gateway Error Code</span>
-                                <span class="highlight-val" style="color: var(--warning);">{{ evt.parsed_payload.get('error_code', 'PAYMENT_FAILED') }}</span>
-                            </div>
-                            <div class="highlight-item" style="grid-column: 1 / -1;">
-                                <span class="highlight-label">Error Description</span>
-                                <span class="highlight-val" style="color: var(--warning); font-size: 0.85rem;">{{ evt.parsed_payload.get('error_description', 'Payment failed at issuing bank.') }}</span>
-                            </div>
+                    </div>
+                {% elif evt.event_type == 'gate_decision' %}
+                    <div style="background: #FAFAF8; border: 1px solid var(--hairline); border-radius: 6px; padding: 12px 16px; margin: 8px 0;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                            <span style="font-size: 11px; text-transform: uppercase; color: var(--muted); font-weight: 600;">CommerceProof Decision</span>
+                            <span style="font-family: var(--font-mono); font-size: 11px; color: var(--accent);">Hash: {{ evt.parsed_payload.get('state_hash', evt.parsed_payload.get('final_state_hash', 'None')) }}</span>
                         </div>
-
-                    {% elif evt.event_type == 'error' %}
-                        <div class="payload-highlights" style="border-left: 3px solid var(--danger);">
-                            <div class="highlight-item">
-                                <span class="highlight-label" style="color: var(--danger);">Security Anomaly</span>
-                                <span class="highlight-val" style="color: var(--danger);">{{ evt.parsed_payload.get('error', 'Security Anomaly') }}</span>
+                        {% if evt.parsed_payload.get('repairs') %}
+                            <div style="font-size: 12px; color: var(--warning); margin-top: 4px;">
+                                <strong>Repairs Applied:</strong> {{ evt.parsed_payload.get('repairs') | join(', ') }}
                             </div>
-                            <div class="highlight-item">
-                                <span class="highlight-label">Captured vs Expected</span>
-                                <span class="highlight-val" style="color: var(--danger);">
-                                    {{ evt.parsed_payload.get('captured_amount_minor') | format_inr }} vs {{ evt.parsed_payload.get('expected_amount_minor') | format_inr }}
-                                </span>
+                        {% endif %}
+                        {% if evt.parsed_payload.get('violations') %}
+                            <div style="font-size: 12px; color: var(--danger); margin-top: 4px;">
+                                <strong>Violations:</strong> {{ evt.parsed_payload.get('violations') | join(', ') }}
                             </div>
-                            <div class="highlight-item" style="grid-column: 1 / -1;">
-                                <span class="highlight-label">Defense Interception</span>
-                                <span class="highlight-val" style="color: var(--danger); font-size: 0.85rem;">{{ evt.parsed_payload.get('message', 'Cart mutation blocked.') }}</span>
-                            </div>
+                        {% endif %}
+                    </div>
+                {% elif evt.event_type == 'order_created' %}
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; background: #FAFAF8; border: 1px solid var(--hairline); border-radius: 6px; padding: 12px 16px; margin: 8px 0;">
+                        <div>
+                            <div style="font-size: 11px; text-transform: uppercase; color: var(--muted); font-weight: 600;">Razorpay Order ID</div>
+                            <div style="font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: #7C3AED;">{{ evt.parsed_payload.get('order_id', evt.parsed_payload.get('id', '—')) }}</div>
                         </div>
-                    {% endif %}
+                        <div>
+                            <div style="font-size: 11px; text-transform: uppercase; color: var(--muted); font-weight: 600;">Authorized Amount</div>
+                            <div style="font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--success);">{{ (evt.parsed_payload.get('amount') or evt.parsed_payload.get('amount_minor')) | format_inr }}</div>
+                        </div>
+                    </div>
+                {% elif evt.event_type == 'payment_captured' %}
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; background: #ECFDF3; border: 1px solid rgba(21, 128, 61, 0.2); border-radius: 6px; padding: 12px 16px; margin: 8px 0;">
+                        <div>
+                            <div style="font-size: 11px; text-transform: uppercase; color: var(--success); font-weight: 600;">Payment ID</div>
+                            <div style="font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--success);">{{ evt.parsed_payload.get('payment_id', '—') }}</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 11px; text-transform: uppercase; color: var(--success); font-weight: 600;">Captured Amount</div>
+                            <div style="font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--success);">{{ evt.parsed_payload.get('amount_minor') | format_inr }}</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 11px; text-transform: uppercase; color: var(--success); font-weight: 600;">HMAC Signature</div>
+                            <div style="font-size: 12px; color: var(--success); font-weight: 600;">Verified (SHA-256)</div>
+                        </div>
+                    </div>
+                {% endif %}
 
-                    <!-- Collapsible Raw JSON for 60-Second Judge Inspection -->
-                    <details>
-                        <summary>Inspect Raw JSON Event Payload &bull; {{ evt.event_type }}</summary>
-                        <pre><code>{{ evt.raw_payload | format_json }}</code></pre>
-                    </details>
-                </div>
+                <!-- Collapsible Raw JSON -->
+                <details class="raw-payload-box">
+                    <summary>Inspect Raw JSON Event Payload &middot; {{ evt.event_type }}</summary>
+                    <pre><code>{{ evt.raw_payload | format_json }}</code></pre>
+                </details>
             </div>
             {% endfor %}
         </div>
         {% else %}
-        <div class="empty-trace">
+        <div style="padding: 64px 24px; text-align: center; color: var(--muted); background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--radius-card);">
             <h3>No Events Found for Session {{ session_id }}</h3>
-            <p style="margin-top: 0.5rem; font-size: 0.9rem;">The session ID may not exist in the active TradeLedger or has been cleared.</p>
+            <p style="margin-top: 6px; font-size: 13px;">This session ID does not exist in the active TradeLedger or has been reset.</p>
         </div>
         {% endif %}
-
-        <footer>
-            MerchantOS AI &bull; Master Plan &sect;14 Static Judge Dashboard &bull; Live Trace Visualizer
-        </footer>
     </div>
-</body>
-</html>
+</section>
+{% endblock %}

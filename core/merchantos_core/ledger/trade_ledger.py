@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import queue
 import threading
 
 from merchantos_core.contracts import LedgerEntry, TradeEvent
@@ -15,7 +16,21 @@ class TradeLedger:
         self._sessions: dict[str, list[TradeEvent]] = {}
         self._order_to_session: dict[str, str] = {}
         self._order_expected_amount: dict[str, int] = {}
+        self._subscribers: list[queue.Queue[TradeEvent]] = []
         self._lock = threading.Lock()
+
+    def subscribe(self, maxsize: int = 1000) -> queue.Queue[TradeEvent]:
+        """Register a new event subscription queue for real-time SSE streaming."""
+        q: queue.Queue[TradeEvent] = queue.Queue(maxsize=maxsize)
+        with self._lock:
+            self._subscribers.append(q)
+        return q
+
+    def unsubscribe(self, q: queue.Queue[TradeEvent]) -> None:
+        """Unregister an event subscription queue."""
+        with self._lock:
+            if q in self._subscribers:
+                self._subscribers.remove(q)
 
     def record_event(self, event: TradeEvent) -> None:
         """Append an immutable TradeEvent to the session's event trace in a thread-safe manner."""
@@ -23,6 +38,13 @@ class TradeLedger:
             if event.session_id not in self._sessions:
                 self._sessions[event.session_id] = []
             self._sessions[event.session_id].append(event)
+
+            # Dispatch non-blocking to all active subscribers (drop on full to never block writers)
+            for sub in list(self._subscribers):
+                try:
+                    sub.put_nowait(event)
+                except queue.Full:
+                    pass
 
             # Auto-index order metadata if present in event payload
             try:
@@ -73,3 +95,4 @@ class TradeLedger:
             self._sessions.clear()
             self._order_to_session.clear()
             self._order_expected_amount.clear()
+            self._subscribers.clear()
