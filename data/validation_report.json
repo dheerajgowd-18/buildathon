@@ -1,8 +1,8 @@
 {
-  "run_id": "val_run_6ab302a9",
+  "run_id": "val_run_5fb48f33",
   "scope": "all",
-  "started_at": "2026-08-29T16:14:15.338673+00:00",
-  "finished_at": "2026-08-29T16:14:15.759447+00:00",
+  "started_at": "2026-08-30T14:56:23.635614+00:00",
+  "finished_at": "2026-08-30T14:56:23.977427+00:00",
   "overall_status": "fail",
   "results": [
     {
@@ -13,7 +13,7 @@
       "latency_ms": 0,
       "detail": "HMAC-SHA256 signature generated and verified; tampered payload successfully rejected.",
       "evidence_json": "{\"algorithm\": \"HMAC-SHA256\", \"signature_length\": 64}",
-      "timestamp": "2026-08-29T16:14:15.338673+00:00"
+      "timestamp": "2026-08-30T14:56:23.635614+00:00"
     },
     {
       "check_id": "canonical_hash_determinism",
@@ -23,7 +23,7 @@
       "latency_ms": 0,
       "detail": "Deterministic SHA-256 canonical hashing verified; 1-paise modification produces hash divergence.",
       "evidence_json": "{\"canonical_hash\": \"51b6db021b4ba1bd...\", \"modified_hash\": \"b1151fbdc8972ad8...\"}",
-      "timestamp": "2026-08-29T16:14:15.338673+00:00"
+      "timestamp": "2026-08-30T14:56:23.635614+00:00"
     },
     {
       "check_id": "commerceproof_clamp",
@@ -33,7 +33,7 @@
       "latency_ms": 0,
       "detail": "Excessive discount proposal intercepted and clamped to policy discount cap and margin floor.",
       "evidence_json": "{\"original_price_minor\": 2600000, \"repaired_price_minor\": 4485000, \"repairs\": [\"Clamped proposed price from 2600000 to margin floor 4485000 (discount adjusted to 715000)\"]}",
-      "timestamp": "2026-08-29T16:14:15.339679+00:00"
+      "timestamp": "2026-08-30T14:56:23.636608+00:00"
     },
     {
       "check_id": "ground_truth_leakage_scan",
@@ -43,7 +43,7 @@
       "latency_ms": 4,
       "detail": "Scanned 150 benchmark scenarios; 0 internal evaluation keys or raw minor values leaked.",
       "evidence_json": "{\"scenarios_scanned\": 150, \"leaks_found\": 0}",
-      "timestamp": "2026-08-29T16:14:15.343676+00:00"
+      "timestamp": "2026-08-30T14:56:23.640605+00:00"
     },
     {
       "check_id": "negotiation_determinism",
@@ -53,7 +53,7 @@
       "latency_ms": 0,
       "detail": "Baseline agent generated bit-identical offer proposals on repeat evaluation.",
       "evidence_json": "{\"selected_sku\": \"SKU-01\", \"proposed_price\": 5000000}",
-      "timestamp": "2026-08-29T16:14:15.344676+00:00"
+      "timestamp": "2026-08-30T14:56:23.641607+00:00"
     },
     {
       "check_id": "ledger_subscription_roundtrip",
@@ -62,28 +62,28 @@
       "status": "pass",
       "latency_ms": 0,
       "detail": "Subscriber queue successfully received live event packet; cleanly unsubscribed.",
-      "evidence_json": "{\"dispatched_event_id\": \"evt_val_sub_77543a\", \"queue_latency_ms\": 0}",
-      "timestamp": "2026-08-29T16:14:15.344676+00:00"
+      "evidence_json": "{\"dispatched_event_id\": \"evt_val_sub_5b5657\", \"queue_latency_ms\": 0}",
+      "timestamp": "2026-08-30T14:56:23.641607+00:00"
     },
     {
       "check_id": "live_razorpay",
       "name": "Razorpay Test-Mode Gateway Connectivity",
       "category": "live_razorpay",
       "status": "fail",
-      "latency_ms": 231,
-      "detail": "Razorpay POST /v1/orders failed with HTTP 401: {\"error\":{\"description\":\"Authentication failed\",\"code\":\"BAD_REQUEST_ERROR\"}}",
+      "latency_ms": 178,
+      "detail": "Razorpay POST /v1/orders failed with HTTP 401: {\"error\":{\"code\":\"BAD_REQUEST_ERROR\",\"description\":\"Authentication failed\"}}",
       "evidence_json": "",
-      "timestamp": "2026-08-29T16:14:15.576230+00:00"
+      "timestamp": "2026-08-30T14:56:23.820172+00:00"
     },
     {
       "check_id": "live_llm",
       "name": "OpenAI-Compatible LLM Provider Connectivity",
       "category": "live_llm",
       "status": "fail",
-      "latency_ms": 183,
+      "latency_ms": 157,
       "detail": "LLM ping request failed: LLM ping failed: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'in",
       "evidence_json": "",
-      "timestamp": "2026-08-29T16:14:15.759447+00:00"
+      "timestamp": "2026-08-30T14:56:23.977427+00:00"
     }
   ]
 }
