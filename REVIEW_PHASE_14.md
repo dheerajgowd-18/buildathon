@@ -38,12 +38,12 @@
 
 ### `git log --oneline -6`
 ```text
+d8208f1 chore: refresh test and validation reports for submission
+c7bb451 docs: finalize phase 14 context and review handover artifacts
 e2f539f docs: cite frozen commit hash in EVALUATION.md
 0fcfad3 feat(phase-14): decision log, panel qa, secret sweep, freeze prep
 267dc7b chore: remove temporary validation report generation script
 903c243 feat(phase-11): validation center with hermetic proofs and live connectivity checks
-db3000c fix(dashboard): use modern TemplateResponse keyword arguments
-873e70a feat(phase-08.5): live integration validation, real razorpay orders, and openai-compatible llm provider
 ```
 
 ### `git show-ref --tags`
